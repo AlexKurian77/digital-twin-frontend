@@ -14,13 +14,13 @@ export default function Navigation() {
   ];
 
   return (
-    <nav className="sticky top-0 z-60 glass-nav border-b border-white/5">
+    <nav className="sticky top-0 z-60 bg-black/60 backdrop-blur-md border-b border-white/10 transition-all">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
 
         {/* Brand / Logo */}
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="relative flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-tr from-pink-600 to-purple-600 shadow-[0_0_15px_rgba(217,2,130,0.5)]">
-            <Globe className="w-5 h-5 text-white" />
+          <div className="relative flex items-center justify-center w-12 h-12 rounded-full overflow-hidden shadow-[0_0_15px_rgba(217,2,130,0.5)]">
+            <img src="/carma-logo.png" alt="Logo" className="w-full h-full object-cover" />
           </div>
           <div className="flex flex-col">
             <span className="text-xl font-bold tracking-tight group-hover:text-pink-200 transition-colors">
