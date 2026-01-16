@@ -236,18 +236,15 @@ export default function CausalGraph() {
           fitView
           colorMode="dark"
         >
-          <Background color="#3b82f6" gap={24} size={1} className="opacity-10" />
+          <Background color="#ffffff" gap={30} size={1} className="opacity-[0.05]" />
           <Controls
-            className="!bg-slate-900/80 !border-white/10 !backdrop-blur-md !text-white"
-            style={{
-              padding: '4px',
-              borderRadius: '8px',
-            } as React.CSSProperties}
+            className="!bg-black/40 !border-white/10 !backdrop-blur-md !text-white !p-1 !rounded-xl"
+            showInteractive={false}
           >
             <ControlButton
               onClick={() => setIsFullScreen(!isFullScreen)}
               title={isFullScreen ? "Exit Full Screen" : "Full Screen"}
-              className="!bg-white/5 hover:!bg-white/10 !text-white !border-none transition-colors"
+              className="!bg-transparent hover:!bg-white/10 !text-white/70 hover:!text-white !border-none transition-colors !rounded-lg"
             >
               {isFullScreen ? "↙" : "↗"}
             </ControlButton>

@@ -1,5 +1,37 @@
 import { type Edge, MarkerType } from "@xyflow/react"
 
+const defaultEdgeStyle = {
+    strokeWidth: 2,
+    stroke: '#3b82f6', // Default blue-ish
+};
+
+const transportEdgeStyle = {
+    stroke: '#d90282', // Neon Pink
+    strokeWidth: 2,
+};
+
+const industrialEdgeStyle = {
+    stroke: '#a855f7', // Purple
+    strokeWidth: 2,
+};
+
+const environmentalEdgeStyle = {
+    stroke: '#00f0ff', // Cyan
+    strokeWidth: 2,
+    strokeDasharray: '5,5', // Dashed for impact/pollution flow
+};
+
+const commonEdgeConfig = {
+    type: "smoothstep",
+    animated: true,
+    style: defaultEdgeStyle,
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#3b82f6' },
+    labelStyle: { fill: 'white', fontWeight: 600, fontSize: 11 },
+    labelBgStyle: { fill: '#0f0518', fillOpacity: 0.7, stroke: '#ffffff30', rx: 4, ry: 4 },
+    labelBgPadding: [6, 4] as [number, number],
+    labelBgBorderRadius: 4,
+};
+
 export const initialEdges: Edge[] = [
   // 1. Industries -> Transport
   { 
@@ -7,20 +39,20 @@ export const initialEdges: Edge[] = [
     source: "industries", 
     target: "transport", 
     label: "Moves goods → CO₂ & particulates",
-    data: { label: "Moves goods → CO₂ & particulates", weight: 0.6 },
-    type: "smoothstep", 
-    markerEnd: { type: MarkerType.ArrowClosed } 
+    ...commonEdgeConfig,
+    style: industrialEdgeStyle,
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#a855f7' }
   },
   
   // 2. Industries -> Energy
   { 
     id: "ind-energy", 
     source: "industries", 
-    target: "energy", 
+    target: "energy",
     label: "Uses power → ↑ CO₂ & pollutants",
-    data: { label: "Uses power → ↑ CO₂ & pollutants", weight: 0.5 },
-    type: "smoothstep", 
-    markerEnd: { type: MarkerType.ArrowClosed } 
+    ...commonEdgeConfig,
+    style: industrialEdgeStyle,
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#a855f7' }
   },
   
   // 3. Industries -> Infrastructure
@@ -29,42 +61,42 @@ export const initialEdges: Edge[] = [
     source: "industries", 
     target: "infrastructure", 
     label: "Drives construction → ↑ CO₂",
-    data: { label: "Drives construction → ↑ CO₂", weight: 0.4 },
-    type: "smoothstep", 
-    markerEnd: { type: MarkerType.ArrowClosed } 
+    ...commonEdgeConfig,
+    style: industrialEdgeStyle,
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#a855f7' }
   },
   
-  // 4. Industries -> CO2 Emissions (Corrected Label)
+  // 4. Industries -> CO2 Emissions
   { 
     id: "ind-co2", 
     source: "industries", 
     target: "co2", 
     label: "Direct + indirect",
-    data: { label: "Direct + indirect", weight: 0.7 },
-    type: "smoothstep", 
-    markerEnd: { type: MarkerType.ArrowClosed } 
+    ...commonEdgeConfig,
+    style: environmentalEdgeStyle,
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#00f0ff' }
   },
 
-  // 5. Industries -> AQI (New Connection)
+  // 5. Industries -> AQI
   { 
     id: "ind-aqi", 
     source: "industries", 
     target: "aqi", 
     label: "Industrial pollutants (PM, NOx, SO₂)",
-    data: { label: "Industrial pollutants (PM, NOx, SO₂)", weight: 0.8 },
-    type: "smoothstep", 
-    markerEnd: { type: MarkerType.ArrowClosed } 
+    ...commonEdgeConfig,
+    style: environmentalEdgeStyle,
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#00f0ff' }
   },
 
   // 6. Transport -> Energy
   { 
     id: "trans-energy", 
     source: "transport", 
-    target: "energy", 
+    target: "energy",
     label: "Fuel demand & refining → ↑ CO₂",
-    data: { label: "Fuel demand & refining → ↑ CO₂", weight: 0.5 },
-    type: "smoothstep", 
-    markerEnd: { type: MarkerType.ArrowClosed } 
+    ...commonEdgeConfig,
+    style: transportEdgeStyle,
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#d90282' }
   },
   
   // 7. Transport -> Infrastructure
@@ -73,9 +105,9 @@ export const initialEdges: Edge[] = [
     source: "transport", 
     target: "infrastructure", 
     label: "Needs roads/airports → ↑ CO₂",
-    data: { label: "Needs roads/airports → ↑ CO₂", weight: 0.4 },
-    type: "smoothstep", 
-    markerEnd: { type: MarkerType.ArrowClosed } 
+    ...commonEdgeConfig,
+    style: transportEdgeStyle,
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#d90282' }
   },
   
   // 8. Transport -> CO2 Emissions
@@ -84,9 +116,9 @@ export const initialEdges: Edge[] = [
     source: "transport", 
     target: "co2", 
     label: "Fuel & vehicle emissions",
-    data: { label: "Fuel & vehicle emissions", weight: 0.7 },
-    type: "smoothstep", 
-    markerEnd: { type: MarkerType.ArrowClosed } 
+    ...commonEdgeConfig,
+    style: environmentalEdgeStyle,
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#00f0ff' }
   },
   
   // 9. Transport -> AQI
@@ -95,9 +127,9 @@ export const initialEdges: Edge[] = [
     source: "transport", 
     target: "aqi", 
     label: "Vehicle emissions (PM, NOx)",
-    data: { label: "Vehicle emissions (PM, NOx)", weight: 0.7 },
-    type: "smoothstep", 
-    markerEnd: { type: MarkerType.ArrowClosed } 
+    ...commonEdgeConfig,
+    style: environmentalEdgeStyle,
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#00f0ff' }
   },
 
   // 10. Energy -> Industries
@@ -106,18 +138,18 @@ export const initialEdges: Edge[] = [
     source: "energy", 
     target: "industries", 
     label: "Powers industry → ↑ CO₂",
-    data: { label: "Powers industry → ↑ CO₂", weight: 0.6 },
-    type: "smoothstep", 
-    markerEnd: { type: MarkerType.ArrowClosed } 
+    ...commonEdgeConfig,
+    style: { stroke: '#eab308', strokeWidth: 2 }, // Yellow for energy
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#eab308' }
   },
   { 
     id: "energy-trans", 
     source: "energy", 
     target: "transport", 
     label: "Fuel transport → ↑ CO₂",
-    data: { label: "Fuel transport → ↑ CO₂", weight: 0.6 },
-    type: "smoothstep", 
-    markerEnd: { type: MarkerType.ArrowClosed } 
+    ...commonEdgeConfig,
+    style: { stroke: '#eab308', strokeWidth: 2 },
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#eab308' }
   },
   
   // 11. Energy -> CO2 Emissions
@@ -126,9 +158,9 @@ export const initialEdges: Edge[] = [
     source: "energy", 
     target: "co2", 
     label: "Power generation emissions",
-    data: { label: "Power generation emissions", weight: 0.8 },
-    type: "smoothstep", 
-    markerEnd: { type: MarkerType.ArrowClosed } 
+    ...commonEdgeConfig,
+    style: environmentalEdgeStyle,
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#00f0ff' }
   },
   
   // 12. Energy -> AQI
@@ -137,9 +169,9 @@ export const initialEdges: Edge[] = [
     source: "energy", 
     target: "aqi", 
     label: "Power Generation (SO₂ & NOx)",
-    data: { label: "Power Generation (SO₂ & NOx)", weight: 0.7 },
-    type: "smoothstep", 
-    markerEnd: { type: MarkerType.ArrowClosed } 
+    ...commonEdgeConfig,
+    style: environmentalEdgeStyle,
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#00f0ff' }
   },
 
   // 13. Infrastructure -> Transport
@@ -148,9 +180,7 @@ export const initialEdges: Edge[] = [
     source: "infrastructure", 
     target: "transport", 
     label: "Urban Sprawl → ↑ CO₂ & emissions",
-    data: { label: "Enables transport", weight: 0.5 },
-    type: "smoothstep", 
-    markerEnd: { type: MarkerType.ArrowClosed } 
+    ...commonEdgeConfig,
   },
   
   // 14. Infrastructure -> Industries
@@ -159,18 +189,14 @@ export const initialEdges: Edge[] = [
     source: "infrastructure", 
     target: "industries", 
     label: "Enables industry → ↑ CO₂",
-    data: { label: "Enables industry → ↑ CO₂", weight: 0.5 },
-    type: "smoothstep", 
-    markerEnd: { type: MarkerType.ArrowClosed } 
+    ...commonEdgeConfig,
   },
   { 
     id: "infra-energy", 
     source: "infrastructure", 
     target: "energy", 
     label: "Energy demand → ↑ CO₂",
-    data: { label: "Energy demand → ↑ CO₂", weight: 0.5 },
-    type: "smoothstep", 
-    markerEnd: { type: MarkerType.ArrowClosed } 
+    ...commonEdgeConfig,
   },
   
   // 15. Infrastructure -> CO2 Emissions
@@ -179,9 +205,9 @@ export const initialEdges: Edge[] = [
     source: "infrastructure", 
     target: "co2", 
     label: "Embodied & use emissions",
-    data: { label: "Embodied & use emissions", weight: 0.6 },
-    type: "smoothstep", 
-    markerEnd: { type: MarkerType.ArrowClosed } 
+    ...commonEdgeConfig,
+    style: environmentalEdgeStyle,
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#00f0ff' }
   },
 
   // 16. CO2 Emissions -> AQI
@@ -190,17 +216,17 @@ export const initialEdges: Edge[] = [
     source: "co2", 
     target: "aqi", 
     label: "Contributes to air pollution",
-    data: { label: "Contributes to air pollution", weight: 0.8 },
-    type: "smoothstep", 
-    markerEnd: { type: MarkerType.ArrowClosed } 
+    ...commonEdgeConfig,
+    style: { stroke: '#ef4444', strokeWidth: 3, strokeDasharray: '5,5' }, // Red alert style
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#ef4444' }
   },
   { 
     id: "aqi-infra", 
     source: "aqi", 
     target: "infrastructure", 
     label: "Poor AQI → Urban health/stability",
-    data: { label: "Poor AQI → Urban health/stability", weight: 0.8 },
-    type: "smoothstep", 
-    markerEnd: { type: MarkerType.ArrowClosed } 
+    ...commonEdgeConfig,
+    style: { stroke: '#ef4444', strokeWidth: 3, strokeDasharray: '5,5' },
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#ef4444' }
   },
-]
+];

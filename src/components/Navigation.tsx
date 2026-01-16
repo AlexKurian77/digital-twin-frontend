@@ -23,9 +23,10 @@ export default function Navigation() {
             <Globe className="w-5 h-5 text-white" />
           </div>
           <div className="flex flex-col">
-            <span className="text-xl font-bold tracking-tight text-white group-hover:text-pink-200 transition-colors">
-              Urban<span className="text-pink-500">Twin</span>.
+            <span className="text-xl font-bold tracking-tight group-hover:text-pink-200 transition-colors">
+              <span className="text-pink-500">CARMA</span>
             </span>
+            <span className="text-sm font-medium text-slate-400">Urban digital twin</span>
           </div>
         </Link>
 
