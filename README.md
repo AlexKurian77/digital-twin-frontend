@@ -70,7 +70,7 @@ The backend handles data processing and AI.
     Create a `.env` file in `digital-twin-backend/` with your keys:
     ```env
     GROQ_API_KEY=your_groq_api_key
-    AMBEE_DATA_KEY=your_ambee_key (optional)
+    AMBEE_DATA_KEY=your_ambee_key
     HF_HUB_ENABLE_HF_TRANSFER=1
     ```
 
