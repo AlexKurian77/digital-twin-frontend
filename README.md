@@ -1,40 +1,90 @@
-# Urban Digital Twin - Frontend
+# Urban Digital Twin Platform
 
 ![Cyberpunk Aesthetic](https://img.shields.io/badge/Style-Cyberpunk%2FWeb3-d90282)
-![Next.js](https://img.shields.io/badge/Framework-Next.js_14-black)
-![TypeScript](https://img.shields.io/badge/Language-TypeScript-blue)
-![Tailwind CSS](https://img.shields.io/badge/CSS-Tailwind-38bdf8)
+![System-Full Stack](https://img.shields.io/badge/System-Full_Stack-blueviolet)
+![Next.js](https://img.shields.io/badge/Frontend-Next.js-black)
+![Flask](https://img.shields.io/badge/Backend-Flask-green)
+![LangChain](https://img.shields.io/badge/AI-LangChain-orange)
 
-A futuristic, high-fidelity Urban Digital Twin dashboard for simulating and visualizing city-wide environmental policies. Built with a premium "Glass & Neon" aesthetic, this interface allows users to monitor live AQI, simulate policy interventions, and analyze health impacts in real-time.
+A futuristic, high-fidelity Urban Digital Twin designed to simulate city-wide environmental policies. This platform combines a **Cyberpunk/Web3 frontend** with a powerful **Causal AI backend** to visualize AQI data, forecast emissions, and generate AI-driven policy interventions.
 
-## ✨ Features
+---
 
-- **Cyberpunk / Web3 Aesthetic**: Deep purple backgrounds, neon accents, glassmorphism cards, and interactive glow effects.
-- **Real-time Dashboard**: Live visualization of AQI (Air Quality Index) with dynamic color coding and trend analysis.
-- **Causal Policy Simulation**: Interactive graph-based policy generator (`CausalGraph`) to test interventions like "EV Subsidies" or "Green Corridors."
-- **Emission Forecasting**: Predictive charts comparing historical data vs. AI-generated forecasts using Random Forest models.
-- **Solutions Marketplace**: An "NFT-style" catalog of futuristic urban solutions (e.g., Algae Curtains, Cloud Seeding) with simulated impact markers.
-- **Health Impact Analysis**: AI-driven health insights (`HealthChat`) and vulnerable group risk assessments based on current environmental data.
+## 🏗️ System Architecture
 
-## 🛠️ Tech Stack
+The project consists of two main services:
 
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS (with custom glassmorphism utilities)
-- **Icons**: Lucide React
-- **Charts**: Recharts
-- **State Management**: React Hooks & Context
+1.  **Frontend (`/frontend`)**: A Next.js 14 application providing the interactive "Glass & Neon" dashboard.
+2.  **Backend (`/digital-twin-backend`)**: A Flask API powered by LangChain and Causal Graphs to handle logic, simulations, and AI queries.
+
+## ✨ Key Features
+
+### 🖥️ Frontend (Dashboard)
+- **Deep Cyberpunk Aesthetics**: Custom "Glass/Dark" theme with neon accents (#d90282, #00f0ff).
+- **Live AQI Monitoring**: Real-time air quality tracking with dynamic health risk indicators.
+- **Solutions Marketplace**: An "NFT-style" catalog where users can deploy futuristic urban tech (e.g., *Cloud Seeding*, *Bio-Filters*).
+- **Interactive Visualizations**: Recharts-powered graphs for emission forecasting and causal loops.
+
+### 🧠 Backend (Intelligence)
+- **Causal Graph Engine**: Simulates the ripple effects of policies across sectors (Transport, Energy, Health).
+- **Policy Generator (RAG/LLM)**: Uses LangChain + Groq to research and generate structured policy JSONs.
+- **Emission Forecasting**: Random Forest models trained on historical data to predict future CO2/AQI trends.
+- **Health Impact Analysis**: Generates personalized health advice based on live environmental data.
+- **Speculative Download**: Optimized model loading with "Light Mode" for instant startup.
+
+---
 
 ## 🚀 Getting Started
 
+Follow these steps to run the full stack locally.
+
 ### Prerequisites
+- **Node.js** 18+
+- **Python** 3.10+
+- **Git**
 
-- Node.js 18+ installed
-- Python backend running
+### 1️⃣ Backend Setup
 
-### Installation
+The backend handles data processing and AI.
 
-1.  Navigate to the frontend directory:
+1.  Navigate to the backend folder:
+    ```bash
+    cd digital-twin-backend
+    ```
+
+2.  Create and activate a virtual environment (optional but recommended):
+    ```bash
+    python -m venv venv
+    # Windows
+    .\venv\Scripts\activate
+    # Mac/Linux
+    source venv/bin/activate
+    ```
+
+3.  Install dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4.  Configure Environment:
+    Create a `.env` file in `digital-twin-backend/` with your keys:
+    ```env
+    GROQ_API_KEY=your_groq_api_key
+    AMBEE_DATA_KEY=your_ambee_key (optional)
+    HF_HUB_ENABLE_HF_TRANSFER=1
+    ```
+
+5.  Run the Server:
+    ```bash
+    python app.py
+    ```
+    *The server will start on `http://localhost:5000`*
+
+### 2️⃣ Frontend Setup
+
+The frontend provides the user interface.
+
+1.  Open a new terminal and navigate to the frontend folder:
     ```bash
     cd frontend
     ```
@@ -44,53 +94,46 @@ A futuristic, high-fidelity Urban Digital Twin dashboard for simulating and visu
     npm install
     ```
 
-3.  Set up environment variables (if needed):
-    Create a `.env.local` file:
-    ```env
-    NEXT_PUBLIC_API_URL=http://localhost:5000
+3.  Run the Development Server:
+    ```bash
+    npm run dev
     ```
 
-### Running Locally
+4.  **Launch**: Open **[http://localhost:3000](http://localhost:3000)** in your browser.
 
-Start the development server:
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+---
 
 ## 📂 Project Structure
 
 ```bash
-frontend/
-├── app/                  # Next.js App Router pages
-│   ├── globals.css       # Global styles (Cyberpunk theme variables)
-│   ├── layout.tsx        # Root layout
-│   └── page.tsx          # Main dashboard page
-├── src/
-│   ├── components/       # Reusable UI components
-│   │   ├── Navigation.tsx    # Main nav bar
-│   │   ├── LiveAQI.tsx       # Real-time AQI widget
-│   │   ├── CausalGraph.tsx   # Policy simulation engine
-│   │   ├── SolutionsCatalog.tsx # Solution cards
-│   │   └── ...
-│   ├── config/           # App configuration
-│   └── data/             # Static data & types
-└── public/               # Static assets
+urban-digital-twin/
+├── digital-twin-backend/     # Python/Flask Server
+│   ├── app.py                # API Entry Point
+│   ├── policy_engine.py      # LLM & RAG Logic
+│   ├── graph_engine.py       # Causal Simulation Logic
+│   ├── faiss_index/          # Vector Store for Research
+│   └── requirements.txt      # Python Dependencies
+│
+└── frontend/                 # Next.js Client
+    ├── app/                  # Pages & Layouts
+    ├── src/
+    │   ├── components/       # UI Components (CausalGraph, LiveAQI...)
+    │   └── data/             # Static Data
+    └── public/               # Assets
 ```
 
-## 🎨 Design System
+## 🛠️ Configuration
 
-The application uses a custom design system defined in `globals.css`:
+### "Light Mode" (Instant Startup)
+The backend is currently configured in **Light Mode** to avoid downloading large embedding models (~500MB) on startup.
+- **Enabled**: `policy_engine.py` skips `snapshot_download`.
+- **Effect**: Start time is <5 seconds. RAG research is bypassed in favor of direct LLM generation.
+- **To Disable**: Uncomment the download logic in `policy_engine.py` to enable full RAG capabilities.
 
-- **Primary Colors**: Neon Pink (`#d90282`), Deep Purple (`#5b21b6`), Cyan (`#00f0ff`).
-- **Glassmorphism**: Utility class `.glass-panel` provides the signature semi-transparent blurred look.
-- **Fonts**: Inter (Google Fonts) for clean, modern typography.
+## 🤝 Contributing
 
-## 🤝 Integration
-
-This frontend connects to a Flask-based backend (`digital-twin-backend`) for:
-- Retrieving live AQI data
-- Running causal inference models
-- Generating AI health recommendations
-- Forecasting emissions
+1.  Fork the repository.
+2.  Create a feature branch (`git checkout -b feature/amazing-feature`).
+3.  Commit your changes (`git commit -m 'Add amazing feature'`).
+4.  Push to the branch (`git push origin feature/amazing-feature`).
+5.  Open a Pull Request.
