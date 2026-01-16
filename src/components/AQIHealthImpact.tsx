@@ -16,6 +16,7 @@ import {
   Check
 } from "lucide-react";
 import { LiveAQI } from "./LiveAQI";
+import { Reveal } from "./Reveal";
 
 // ... imports stay same ...
 
@@ -60,7 +61,7 @@ function AQISelector({
             {isCurrent && (
               <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-4 w-4 bg-pink-500 border-2 border-white"></span>
+                <span className="relative inline-flex rounded-full h-4 w-4 bg-white border-2 border-white/50"></span>
               </span>
             )}
             <div className="text-sm font-bold tracking-wide uppercase">{category.name}</div>
@@ -198,57 +199,61 @@ export default function AQIHealthImpact() {
       <div className="max-w-6xl mx-auto px-6 py-12">
 
         {/* Category Header */}
-        <div
-          className="glass-panel p-8 mb-10 transition-all duration-500 hover:shadow-[0_0_30px_rgba(255,255,255,0.05)] relative overflow-hidden"
-        >
-          <div className="absolute left-0 top-0 w-2 h-full transition-colors duration-500" style={{ backgroundColor: selectedCategory.color }} />
+        <Reveal>
+          <div
+            className="glass-panel p-8 mb-10 transition-all duration-500 hover:shadow-[0_0_30px_rgba(255,255,255,0.05)] relative overflow-hidden"
+          >
+            <div className="absolute left-0 top-0 w-2 h-full transition-colors duration-500" style={{ backgroundColor: selectedCategory.color }} />
 
-          <div className="flex items-center justify-between flex-wrap gap-6 relative z-10">
-            <div>
-              <div className="flex items-center gap-4 mb-3">
-                <div
-                  className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg"
-                  style={{ backgroundColor: selectedCategory.color }}
-                >
-                  <Activity className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-3xl font-bold text-white tracking-tight">
-                    {selectedCategory.name}
-                  </h3>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs font-bold bg-white/10 px-2 py-0.5 rounded text-white/80">AQI {selectedCategory.range}</span>
+            <div className="flex items-center justify-between flex-wrap gap-6 relative z-10">
+              <div>
+                <div className="flex items-center gap-4 mb-3">
+                  <div
+                    className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg"
+                    style={{ backgroundColor: selectedCategory.color }}
+                  >
+                    <Activity className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-3xl font-bold text-white tracking-tight">
+                      {selectedCategory.name}
+                    </h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xs font-bold bg-white/10 px-2 py-0.5 rounded text-white/80">AQI {selectedCategory.range}</span>
+                    </div>
                   </div>
                 </div>
+                <p className="text-white/60 pl-16">
+                  PM2.5 Concentration: <span className="text-white font-bold">{selectedCategory.pm25Range}</span>
+                </p>
               </div>
-              <p className="text-white/60 pl-16">
-                PM2.5 Concentration: <span className="text-white font-bold">{selectedCategory.pm25Range}</span>
-              </p>
-            </div>
-            {selectedCategory.lifeExpectancyImpact && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-2xl px-6 py-4 max-w-sm backdrop-blur-sm">
-                <div className="flex items-center gap-2 text-red-400 font-bold text-xs uppercase tracking-widest mb-2">
-                  <AlertTriangle className="w-4 h-4" />
-                  <span>Life Expectancy Warning</span>
+              {selectedCategory.lifeExpectancyImpact && (
+                <div className="bg-red-500/10 border border-red-500/20 rounded-2xl px-6 py-4 max-w-sm backdrop-blur-sm">
+                  <div className="flex items-center gap-2 text-red-400 font-bold text-xs uppercase tracking-widest mb-2">
+                    <AlertTriangle className="w-4 h-4" />
+                    <span>Life Expectancy Warning</span>
+                  </div>
+                  <p className="text-white font-medium text-lg tracking-tight">{selectedCategory.lifeExpectancyImpact}</p>
                 </div>
-                <p className="text-white font-medium text-lg tracking-tight">{selectedCategory.lifeExpectancyImpact}</p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
+        </Reveal>
 
         {/* Physiological Impact */}
-        <div className="glass-panel p-8 mb-10">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-white/5 rounded-lg">
-              <Activity className="w-5 h-5 text-secondary" />
+        <Reveal delay={100}>
+          <div className="glass-panel p-8 mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-white/5 rounded-lg">
+                <Activity className="w-5 h-5 text-secondary" />
+              </div>
+              <h3 className="text-xl font-bold text-white">Physiological Impact</h3>
             </div>
-            <h3 className="text-xl font-bold text-white">Physiological Impact</h3>
+            <p className="text-white/80 leading-relaxed text-lg border-l-2 border-white/10 pl-4 py-1">
+              {selectedCategory.physiologicalImpact}
+            </p>
           </div>
-          <p className="text-white/80 leading-relaxed text-lg border-l-2 border-white/10 pl-4 py-1">
-            {selectedCategory.physiologicalImpact}
-          </p>
-        </div>
+        </Reveal>
 
         {/* Vulnerable Groups Grid */}
         <div className="mb-12">
@@ -258,12 +263,13 @@ export default function AQIHealthImpact() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {selectedCategory.vulnerableGroups.map((vg, idx) => (
-              <VulnerableGroupCard
-                key={idx}
-                group={vg.group}
-                effects={vg.effects}
-                accentColor={selectedCategory.color}
-              />
+              <Reveal key={idx} delay={200 + idx * 50}>
+                <VulnerableGroupCard
+                  group={vg.group}
+                  effects={vg.effects}
+                  accentColor={selectedCategory.color}
+                />
+              </Reveal>
             ))}
           </div>
         </div>

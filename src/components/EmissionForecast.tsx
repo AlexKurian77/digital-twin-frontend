@@ -99,7 +99,7 @@ export function EmissionForecast() {
     };
 
     return (
-        <div className="glass-panel p-6 mt-8 relative min-h-[400px]">
+        <div className="glass-panel p-6 mt-6 relative min-h-[400px]">
             {loading && (
                 <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center rounded-2xl">
                     <div className="flex flex-col items-center gap-4">

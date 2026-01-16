@@ -24,7 +24,7 @@ export default function CausalNode({ data }: { data: NodeData }) {
       {/* Glow Effect Layer */}
       <div
         className={`absolute -inset-0.5 rounded-2xl blur opacity-30 transition-opacity duration-300
-        ${isEnabled ? (isOutput ? "bg-secondary" : "bg-pink-500") : "bg-transparent"}
+        ${isEnabled ? (isOutput ? "bg-secondary" : "bg-[#016330]") : "bg-transparent"}
         group-hover:opacity-60
         `}
       />
@@ -32,8 +32,8 @@ export default function CausalNode({ data }: { data: NodeData }) {
       {/* Main Card Content */}
       <div
         className={`relative z-10 glass-panel overflow-hidden
-          ${isSector ? "p-4 min-w-[160px]" : "px-4 py-2 min-w-[120px]"}
-          ${isOutput ? "border-secondary/50 shadow-[0_0_15px_rgba(0,240,255,0.2)]" : ""}
+          ${isSector ? "p-4 min-w-[160px]" : "px-5 py-3 min-w-[140px]"}
+          ${isOutput ? "border-secondary shadow-[0_0_30px_rgba(6,182,212,0.4)] bg-secondary/10 backdrop-blur-xl" : ""}
           ${!isEnabled ? "!border-white/5 !bg-black/40" : ""}
         `}
       >
@@ -41,7 +41,7 @@ export default function CausalNode({ data }: { data: NodeData }) {
         <div className="flex items-center justify-between gap-3 mb-2">
           <span className={`font-bold tracking-tight text-white
                 ${isSector ? "text-sm" : "text-xs"}
-                ${isOutput ? "text-lg text-secondary" : ""}
+                ${isOutput ? "text-center text-2xl font-extrabold text-secondary drop-shadow-[0_0_10px_rgba(6,182,212,0.6)]" : ""}
             `}>
             {data.label}
           </span>
@@ -63,7 +63,7 @@ export default function CausalNode({ data }: { data: NodeData }) {
             <div className="relative w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
               {/* Progress Bar */}
               <div
-                className="absolute top-0 left-0 h-full bg-gradient-to-r from-pink-500 to-purple-500 transition-all duration-300"
+                className="absolute top-0 left-0 h-full bg-gradient-to-r from-green-500 to-teal-500 transition-all duration-300"
                 style={{ width: `${data.value}%` }}
               />
 
@@ -94,7 +94,7 @@ export default function CausalNode({ data }: { data: NodeData }) {
       <Handle
         type="source"
         position={Position.Bottom}
-        className="!w-3 !h-3 !bg-black !border-2 !border-pink-500 shadow-[0_0_10px_#d90282]"
+        className="!w-3 !h-3 !bg-black !border-2 !border-green-500 shadow-[0_0_10px_#4ade80]"
       />
     </div>
   );

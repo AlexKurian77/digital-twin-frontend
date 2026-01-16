@@ -6,12 +6,12 @@ const defaultEdgeStyle = {
 };
 
 const transportEdgeStyle = {
-    stroke: '#d90282', // Neon Pink
+    stroke: '#4ade80', // Green
     strokeWidth: 2,
 };
 
 const industrialEdgeStyle = {
-    stroke: '#a855f7', // Purple
+    stroke: '#2dd4bf', // Teal
     strokeWidth: 2,
 };
 
@@ -41,7 +41,7 @@ export const initialEdges: Edge[] = [
     label: "Moves goods → CO₂ & particulates",
     ...commonEdgeConfig,
     style: industrialEdgeStyle,
-    markerEnd: { type: MarkerType.ArrowClosed, color: '#a855f7' }
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#2dd4bf' }
   },
   
   // 2. Industries -> Energy
@@ -52,7 +52,7 @@ export const initialEdges: Edge[] = [
     label: "Uses power → ↑ CO₂ & pollutants",
     ...commonEdgeConfig,
     style: industrialEdgeStyle,
-    markerEnd: { type: MarkerType.ArrowClosed, color: '#a855f7' }
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#2dd4bf' }
   },
   
   // 3. Industries -> Infrastructure
@@ -63,7 +63,7 @@ export const initialEdges: Edge[] = [
     label: "Drives construction → ↑ CO₂",
     ...commonEdgeConfig,
     style: industrialEdgeStyle,
-    markerEnd: { type: MarkerType.ArrowClosed, color: '#a855f7' }
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#2dd4bf' }
   },
   
   // 4. Industries -> CO2 Emissions
@@ -96,7 +96,7 @@ export const initialEdges: Edge[] = [
     label: "Fuel demand & refining → ↑ CO₂",
     ...commonEdgeConfig,
     style: transportEdgeStyle,
-    markerEnd: { type: MarkerType.ArrowClosed, color: '#d90282' }
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#4ade80' }
   },
   
   // 7. Transport -> Infrastructure
@@ -107,7 +107,7 @@ export const initialEdges: Edge[] = [
     label: "Needs roads/airports → ↑ CO₂",
     ...commonEdgeConfig,
     style: transportEdgeStyle,
-    markerEnd: { type: MarkerType.ArrowClosed, color: '#d90282' }
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#4ade80' }
   },
   
   // 8. Transport -> CO2 Emissions

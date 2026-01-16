@@ -19,14 +19,14 @@ export default function Navigation() {
 
         {/* Brand / Logo */}
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="relative flex items-center justify-center w-12 h-12 rounded-full overflow-hidden shadow-[0_0_15px_rgba(217,2,130,0.5)]">
+          <div className="relative flex items-center justify-center w-12 h-12 rounded-full overflow-hidden shadow-[0_0_15px_rgba(74,222,128,0.5)]">
             <img src="/carma-logo.png" alt="Logo" className="w-full h-full object-cover" />
           </div>
           <div className="flex flex-col">
-            <span className="text-xl font-bold tracking-tight group-hover:text-pink-200 transition-colors">
-              <span className="text-pink-500">CARMA</span>
+            <span className="text-xl font-bold tracking-tight group-hover:text-green-200 transition-colors">
+              <span className="text-green-500">CARMA</span>
             </span>
-            <span className="text-sm font-medium text-slate-400">Urban digital twin</span>
+            <span className="text-sm font-medium text-slate-400">Urban CO₂ digital twin</span>
           </div>
         </Link>
 
@@ -38,15 +38,15 @@ export default function Navigation() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`relative flex items-center gap-2 text-sm font-medium transition-all duration-300 ${isActive ? "text-pink-400" : "text-slate-400 hover:text-white"
+                className={`relative flex items-center gap-2 text-sm font-medium transition-all duration-300 ${isActive ? "text-green-400" : "text-slate-400 hover:text-white"
                   }`}
               >
                 {/* Glow dot for active state */}
                 {isActive && (
-                  <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-pink-500 shadow-[0_0_10px_#d90282]" />
+                  <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_10px_#4ade80]" />
                 )}
 
-                <span className={isActive ? "text-pink-400" : "opacity-70 group-hover:opacity-100"}>
+                <span className={isActive ? "text-green-400" : "opacity-70 group-hover:opacity-100"}>
                   {link.icon}
                 </span>
                 {link.label}

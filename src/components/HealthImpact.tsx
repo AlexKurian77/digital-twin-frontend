@@ -38,7 +38,7 @@ export function HealthImpact({ aqiData }: HealthImpactProps) {
         </p>
         <button
           onClick={generateHealthAnalysis}
-          className="btn-primary px-8 py-3.5 rounded-full font-bold flex items-center gap-2 mx-auto shadow-lg shadow-pink-500/20 hover:shadow-pink-500/40 text-white"
+          className="btn-primary px-8 py-3.5 rounded-full font-bold flex items-center gap-2 mx-auto shadow-lg shadow-green-500/20 hover:shadow-green-500/40 text-white"
         >
           <Sparkles className="w-5 h-5" />
           Run AI Health Scan
@@ -52,7 +52,7 @@ export function HealthImpact({ aqiData }: HealthImpactProps) {
       case 'low': return 'text-[#00ff9d] drop-shadow-[0_0_8px_rgba(0,255,157,0.5)]';
       case 'medium': return 'text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]';
       case 'high': return 'text-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.5)]';
-      case 'critical': return 'text-pink-600 drop-shadow-[0_0_10px_rgba(219,39,119,0.8)] animate-pulse';
+      case 'critical': return 'text-red-500 drop-shadow-[0_0_10px_rgba(239,68,68,0.8)] animate-pulse';
       default: return 'text-white';
     }
   };
@@ -122,7 +122,7 @@ export function HealthImpact({ aqiData }: HealthImpactProps) {
           <ul className="space-y-2">
             {healthAnalysis.immediate_actions.map((action, idx) => (
               <li key={idx} className="flex items-start gap-2 text-sm text-white/70">
-                <Zap className="w-4 h-4 text-pink-500 mt-0.5 shrink-0" />
+                <Zap className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
                 {action}
               </li>
             ))}
@@ -136,7 +136,7 @@ export function HealthImpact({ aqiData }: HealthImpactProps) {
           <h4 className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">
             Long Term Projection
           </h4>
-          <p className="text-pink-500 font-bold text-lg mb-1 drop-shadow-sm">
+          <p className="text-red-500 font-bold text-lg mb-1 drop-shadow-sm">
             Life Expectancy Loss: <span className="text-white">{healthAnalysis.long_term_risk.life_expectancy_loss}</span>
           </p>
           <p className="text-white/50 text-xs">
@@ -152,7 +152,7 @@ export function HealthImpact({ aqiData }: HealthImpactProps) {
               <span className="font-bold">Asthma:</span> {healthAnalysis.pre_existing_conditions.asthma}
             </div>
             {healthAnalysis.pregnancy_risks && healthAnalysis.pregnancy_risks.length > 5 && (
-              <div className="text-xs text-pink-400 bg-pink-500/10 px-3 py-1.5 rounded-full border border-pink-500/20">
+              <div className="text-xs text-purple-400 bg-purple-500/10 px-3 py-1.5 rounded-full border border-purple-500/20">
                 <span className="font-bold">Pregnancy:</span> {healthAnalysis.pregnancy_risks}
               </div>
             )}

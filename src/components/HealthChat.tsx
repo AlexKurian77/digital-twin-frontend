@@ -99,7 +99,7 @@ export function HealthChat({ aqiContext }: HealthChatProps) {
             >
               <div
                 className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm ${msg.role === 'user'
-                  ? 'bg-gradient-to-br from-pink-600 to-purple-600 text-white rounded-tr-sm'
+                  ? 'bg-gradient-to-br from-green-600 to-teal-600 text-white rounded-tr-sm'
                   : 'bg-white/10 text-white border border-white/5 rounded-tl-sm'
                   }`}
               >
@@ -133,7 +133,7 @@ export function HealthChat({ aqiContext }: HealthChatProps) {
           <button
             onClick={sendMessage}
             disabled={loading}
-            className="btn-primary w-12 flex items-center justify-center rounded-xl shadow-lg shadow-pink-500/10 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 transition-transform"
+            className="btn-primary w-12 flex items-center justify-center rounded-xl shadow-lg shadow-green-500/10 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 transition-transform"
           >
             <Send className="w-5 h-5" />
           </button>

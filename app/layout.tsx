@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Urban CO₂ Digital Twin",
+  title: "Carma - Urban CO₂ Digital Twin",
   description: "Environmental Health Dashboard - Policy Impact Simulator & AQI Health Guide",
 };
 

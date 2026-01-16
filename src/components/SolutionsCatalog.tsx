@@ -24,7 +24,9 @@ import {
   Rocket,
   Sparkles
 } from "lucide-react";
+
 import { API_BASE_URL } from '../config';
+import { Reveal } from "./Reveal";
 
 interface ImpactResult {
   co2: { baseline: number; post_policy: number; change_pct: number };
@@ -156,7 +158,7 @@ function SolutionCard({
               <p className="text-white/60 text-sm bg-white/5 p-3 rounded-lg border border-white/5">{solution.mechanism}</p>
             </div>
             <div>
-              <span className="text-[10px] font-bold text-pink-500 uppercase tracking-widest mb-1 block">Key Barrier</span>
+              <span className="text-[10px] font-bold text-green-500 uppercase tracking-widest mb-1 block">Key Barrier</span>
               <p className="text-white/60 text-sm bg-white/5 p-3 rounded-lg border border-white/5">{solution.barrier}</p>
             </div>
           </div>
@@ -348,30 +350,33 @@ export default function SolutionsCatalog() {
         />
 
         {/* Category Description */}
-        <div
-          className="glass-panel p-6 mb-10 flex items-center gap-6 relative overflow-hidden"
-        >
-          <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-secondary to-pink-500" />
+        <Reveal>
+          <div
+            className="glass-panel p-6 mb-10 flex items-center gap-6 relative overflow-hidden"
+          >
+            <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-secondary to-green-500" />
 
-          <div className="p-4 bg-white/5 rounded-2xl border border-white/10 shadow-lg backdrop-blur-sm">
-            <span className="text-white/90">{getCategoryIcon(selectedCategory.id)}</span>
+            <div className="p-4 bg-white/5 rounded-2xl border border-white/10 shadow-lg backdrop-blur-sm">
+              <span className="text-white/90">{getCategoryIcon(selectedCategory.id)}</span>
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold text-white mb-2">{selectedCategory.name}</h3>
+              <p className="text-white/60 text-lg leading-snug">{selectedCategory.description}</p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-2xl font-bold text-white mb-2">{selectedCategory.name}</h3>
-            <p className="text-white/60 text-lg leading-snug">{selectedCategory.description}</p>
-          </div>
-        </div>
+        </Reveal>
 
         {/* Solutions Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
-          {selectedCategory.solutions.map((solution) => (
-            <SolutionCard
-              key={solution.id}
-              solution={solution}
-              categoryColor={selectedCategory.color}
-              onApply={applySolution}
-              isApplying={applyingId === solution.id}
-            />
+          {selectedCategory.solutions.map((solution, index) => (
+            <Reveal key={solution.id} delay={index * 100} className="h-full">
+              <SolutionCard
+                solution={solution}
+                categoryColor={selectedCategory.color}
+                onApply={applySolution}
+                isApplying={applyingId === solution.id}
+              />
+            </Reveal>
           ))}
         </div>
       </div>

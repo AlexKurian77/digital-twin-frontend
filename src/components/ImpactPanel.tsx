@@ -49,10 +49,10 @@ export function ImpactPanel({ impact, policy }: ImpactPanelProps) {
       {/* Policy Details */}
       {policy && (
         <div className="mb-6 p-4 bg-white/5 border border-white/10 rounded-xl relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-1 h-full bg-pink-500" />
+          <div className="absolute top-0 left-0 w-1 h-full bg-green-500" />
 
           <div className="flex items-start gap-3 relative z-10">
-            <ClipboardList className="w-6 h-6 text-pink-400 mt-1" />
+            <ClipboardList className="w-6 h-6 text-green-400 mt-1" />
             <div className="flex-1">
               <h4 className="font-bold text-white text-lg tracking-tight">{policy.name}</h4>
               <p className="text-white/70 text-sm mt-1 leading-relaxed">{policy.description}</p>
@@ -81,7 +81,7 @@ export function ImpactPanel({ impact, policy }: ImpactPanelProps) {
           </div>
           <div className="flex items-baseline gap-2 mb-2">
             <span
-              className={`text-2xl font-bold tabular-nums drop-shadow-sm ${co2Change < 0 ? "text-secondary" : "text-pink-500"
+              className={`text-2xl font-bold tabular-nums drop-shadow-sm ${co2Change < 0 ? "text-secondary" : "text-green-500"
                 }`}
             >
               {co2Change > 0 ? "+" : ""}
@@ -108,7 +108,7 @@ export function ImpactPanel({ impact, policy }: ImpactPanelProps) {
           </div>
           <div className="flex items-baseline gap-2 mb-2">
             <span
-              className={`text-2xl font-bold tabular-nums drop-shadow-sm ${aiqChange < 0 ? "text-[#00ff9d]" : "text-pink-500"
+              className={`text-2xl font-bold tabular-nums drop-shadow-sm ${aiqChange < 0 ? "text-[#00ff9d]" : "text-green-500"
                 }`}
             >
               {aiqChange > 0 ? "+" : ""}
@@ -139,13 +139,13 @@ export function ImpactPanel({ impact, policy }: ImpactPanelProps) {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-white/50">Worsened:</span>
-              <span className="text-pink-500 font-bold">
+              <span className="text-red-500 font-bold">
                 {impact.cascade_analysis.summary.nodes_with_increase}
               </span>
             </div>
             <div className="flex justify-between items-center pt-2 border-t border-white/10">
               <span className="text-white/50">Avg Shift:</span>
-              <span className={`font-bold tabular-nums ${impact.cascade_analysis.summary.avg_change_pct < 0 ? 'text-secondary' : 'text-pink-500'}`}>
+              <span className={`font-bold tabular-nums ${impact.cascade_analysis.summary.avg_change_pct < 0 ? 'text-secondary' : 'text-green-500'}`}>
                 {impact.cascade_analysis.summary.avg_change_pct > 0 ? '+' : ''}
                 {impact.cascade_analysis.summary.avg_change_pct.toFixed(1)}%
               </span>
@@ -167,7 +167,7 @@ export function ImpactPanel({ impact, policy }: ImpactPanelProps) {
                   key={nodeId}
                   className={`px-3 py-1.5 rounded-lg border text-xs font-mono transition-all duration-200 flex items-center gap-2 ${change < 0
                     ? "bg-secondary/10 border-secondary/20 text-secondary"
-                    : "bg-pink-500/10 border-pink-500/20 text-pink-400"
+                    : "bg-green-500/10 border-green-500/20 text-green-400"
                     }`}
                 >
                   <span className="font-semibold">{nodeId}</span>
