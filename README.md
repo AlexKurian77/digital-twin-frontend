@@ -30,7 +30,7 @@ A futuristic, high-fidelity Urban Digital Twin dashboard for simulating and visu
 ### Prerequisites
 
 - Node.js 18+ installed
-- Python backend running (see [Backend README](../digital-twin-backend/README.md))
+- Python backend running
 
 ### Installation
 
