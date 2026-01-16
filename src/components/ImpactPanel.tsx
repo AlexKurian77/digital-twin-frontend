@@ -45,18 +45,22 @@ export function ImpactPanel({ impact, policy }: ImpactPanelProps) {
   const aiqChange = impact.aqi.change_pct;
 
   return (
-    <div className="w-full p-4 bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+    <div className="w-full p-6 glass-panel hover:shadow-[0_8px_32px_rgba(217,2,130,0.15)] transition-all duration-300">
       {/* Policy Details */}
       {policy && (
-        <div className="mb-4 p-4 bg-slate-900/50 border border-slate-600 rounded-lg">
-          <div className="flex items-start gap-3 mb-2">
-            <ClipboardList className="w-6 h-6 text-slate-400" />
+        <div className="mb-6 p-4 bg-white/5 border border-white/10 rounded-xl relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-1 h-full bg-pink-500" />
+
+          <div className="flex items-start gap-3 relative z-10">
+            <ClipboardList className="w-6 h-6 text-pink-400 mt-1" />
             <div className="flex-1">
-              <h4 className="font-bold text-white text-md">{policy.name}</h4>
-              <p className="text-slate-300 text-sm mt-1">{policy.description}</p>
+              <h4 className="font-bold text-white text-lg tracking-tight">{policy.name}</h4>
+              <p className="text-white/70 text-sm mt-1 leading-relaxed">{policy.description}</p>
               {policy.mutations && policy.mutations.length > 0 && (
-                <div className="mt-2 text-xs text-slate-400">
-                  <span className="font-semibold">Actions:</span> {policy.mutations.length} mutation{policy.mutations.length !== 1 ? 's' : ''}
+                <div className="mt-3 text-xs text-white/50 flex items-center gap-2">
+                  <span className="px-2 py-0.5 rounded-full bg-white/10 border border-white/5">
+                    {policy.mutations.length} mutations
+                  </span>
                 </div>
               )}
             </div>
@@ -64,77 +68,84 @@ export function ImpactPanel({ impact, policy }: ImpactPanelProps) {
         </div>
       )}
 
-      <div className="flex items-center mb-4 gap-2">
-        <Target className="w-6 h-6 text-blue-400" />
+      <div className="flex items-center mb-5 gap-2">
+        <Target className="w-5 h-5 text-secondary" />
         <h3 className="text-lg font-bold text-white">Impact Analysis</h3>
       </div>
 
       <div className="grid grid-cols-3 gap-4">
         {/* CO₂ Impact */}
-        <div className="p-4 bg-gradient-to-br from-blue-900/30 to-blue-800/10 rounded-lg border border-blue-700/50 hover:border-blue-600 transition-all duration-200">
-          <div className="flex justify-between items-start mb-3">
-            <span className="font-semibold text-sm text-blue-300 uppercase tracking-wide">CO₂ Emissions</span>
+        <div className="p-4 bg-gradient-to-br from-blue-500/10 to-transparent rounded-xl border border-blue-500/20 relative group">
+          <div className="flex justify-between items-start mb-2">
+            <span className="font-semibold text-xs text-blue-300 uppercase tracking-wider">CO₂ Emissions</span>
+          </div>
+          <div className="flex items-baseline gap-2 mb-2">
             <span
-              className={`text-lg font-bold tabular-nums ${co2Change < 0 ? "text-emerald-400" : "text-rose-400"
+              className={`text-2xl font-bold tabular-nums drop-shadow-sm ${co2Change < 0 ? "text-secondary" : "text-pink-500"
                 }`}
             >
               {co2Change > 0 ? "+" : ""}
               {co2Change.toFixed(1)}%
             </span>
           </div>
-          <div className="text-xs text-slate-400 font-mono mb-3">
+
+          <div className="text-xs text-white/40 font-mono mb-3">
             {impact.co2.baseline.toFixed(0)} → {impact.co2.post_policy.toFixed(0)}
           </div>
-          <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+
+          <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-blue-500 to-blue-400 transition-all duration-500"
+              className="h-full bg-blue-500 shadow-[0_0_10px_#3b82f6]"
               style={{ width: Math.min(100, Math.max(20, (impact.co2.post_policy / Math.max(impact.co2.baseline, impact.co2.post_policy)) * 100)) + '%' }}
             ></div>
           </div>
         </div>
 
         {/* AQI Impact */}
-        <div className="p-4 bg-gradient-to-br from-orange-900/30 to-orange-800/10 rounded-lg border border-orange-700/50 hover:border-orange-600 transition-all duration-200">
-          <div className="flex justify-between items-start mb-3">
-            <span className="font-semibold text-sm text-orange-300 uppercase tracking-wide">Air Quality Index</span>
+        <div className="p-4 bg-gradient-to-br from-orange-500/10 to-transparent rounded-xl border border-orange-500/20">
+          <div className="flex justify-between items-start mb-2">
+            <span className="font-semibold text-xs text-orange-300 uppercase tracking-wider">AQI Level</span>
+          </div>
+          <div className="flex items-baseline gap-2 mb-2">
             <span
-              className={`text-lg font-bold tabular-nums ${aiqChange < 0 ? "text-emerald-400" : "text-rose-400"
+              className={`text-2xl font-bold tabular-nums drop-shadow-sm ${aiqChange < 0 ? "text-[#00ff9d]" : "text-pink-500"
                 }`}
             >
               {aiqChange > 0 ? "+" : ""}
               {aiqChange.toFixed(1)}%
             </span>
           </div>
-          <div className="text-xs text-slate-400 font-mono mb-3">
+
+          <div className="text-xs text-white/40 font-mono mb-3">
             {impact.aqi.baseline.toFixed(0)} → {impact.aqi.post_policy.toFixed(0)}
           </div>
-          <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+          <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-orange-500 to-orange-400 transition-all duration-500"
+              className="h-full bg-orange-500 shadow-[0_0_10px_#f97316]"
               style={{ width: Math.min(100, Math.max(20, (impact.aqi.post_policy / Math.max(impact.aqi.baseline, impact.aqi.post_policy)) * 100)) + '%' }}
             ></div>
           </div>
         </div>
 
         {/* Summary Stats */}
-        <div className="p-4 bg-gradient-to-br from-purple-900/30 to-purple-800/10 rounded-lg border border-purple-700/50 hover:border-purple-600 transition-all duration-200">
-          <div className="text-sm font-semibold mb-3 text-purple-300 uppercase tracking-wide">Cascade Effects</div>
-          <div className="text-xs text-slate-300 space-y-2">
+        <div className="p-4 bg-gradient-to-br from-purple-500/10 to-transparent rounded-xl border border-purple-500/20">
+          <div className="text-xs font-semibold mb-3 text-purple-300 uppercase tracking-wider">Network Effect</div>
+          <div className="text-xs text-white/70 space-y-2">
             <div className="flex justify-between items-center">
-              <span className="text-slate-400">Improved:</span>
-              <span className="text-emerald-400 font-bold text-sm">
+              <span className="text-white/50">Improved:</span>
+              <span className="text-[#00ff9d] font-bold">
                 {impact.cascade_analysis.summary.nodes_with_reduction}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-slate-400">Affected:</span>
-              <span className="text-rose-400 font-bold text-sm">
+              <span className="text-white/50">Worsened:</span>
+              <span className="text-pink-500 font-bold">
                 {impact.cascade_analysis.summary.nodes_with_increase}
               </span>
             </div>
-            <div className="flex justify-between items-center pt-2 border-t border-slate-700">
-              <span className="text-slate-400">Avg Change:</span>
-              <span className={`font-bold text-sm tabular-nums ${impact.cascade_analysis.summary.avg_change_pct < 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+            <div className="flex justify-between items-center pt-2 border-t border-white/10">
+              <span className="text-white/50">Avg Shift:</span>
+              <span className={`font-bold tabular-nums ${impact.cascade_analysis.summary.avg_change_pct < 0 ? 'text-secondary' : 'text-pink-500'}`}>
                 {impact.cascade_analysis.summary.avg_change_pct > 0 ? '+' : ''}
                 {impact.cascade_analysis.summary.avg_change_pct.toFixed(1)}%
               </span>
@@ -145,27 +156,31 @@ export function ImpactPanel({ impact, policy }: ImpactPanelProps) {
 
       {/* Most Affected Sectors */}
       {impact.cascade_analysis.most_affected_nodes.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-slate-700">
-          <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wide mb-3 flex items-center gap-2">
-            <BarChart2 className="w-4 h-4" /> Most Affected Sectors
+        <div className="mt-6 pt-5 border-t border-white/10">
+          <h4 className="text-xs font-bold text-white/60 uppercase tracking-wider mb-4 flex items-center gap-2">
+            <BarChart2 className="w-4 h-4" /> Ripple Effects (Top 5)
           </h4>
           <div className="flex flex-wrap gap-2">
-            {impact.cascade_analysis.most_affected_nodes.slice(0, 10).map(
+            {impact.cascade_analysis.most_affected_nodes.slice(0, 5).map(
               ([nodeId, change]) => (
                 <div
                   key={nodeId}
-                  className={`px-3 py-2 rounded-lg border text-xs font-mono transition-all duration-200 ${change < 0
-                      ? "bg-emerald-900/30 border-emerald-700/50 text-emerald-300"
-                      : "bg-rose-900/30 border-rose-700/50 text-rose-300"
+                  className={`px-3 py-1.5 rounded-lg border text-xs font-mono transition-all duration-200 flex items-center gap-2 ${change < 0
+                    ? "bg-secondary/10 border-secondary/20 text-secondary"
+                    : "bg-pink-500/10 border-pink-500/20 text-pink-400"
                     }`}
                 >
-                  <div className="font-semibold">{nodeId}</div>
-                  <div className="text-xs opacity-90">
-                    {change > 0 ? "+" : ""}
-                    {change.toFixed(1)}%
-                  </div>
+                  <span className="font-semibold">{nodeId}</span>
+                  <span className="opacity-80">
+                    {change > 0 ? "↑" : "↓"} {Math.abs(change).toFixed(1)}%
+                  </span>
                 </div>
               )
+            )}
+            {impact.cascade_analysis.most_affected_nodes.length > 5 && (
+              <div className="px-2 py-1.5 text-xs text-white/30 italic">
+                +{impact.cascade_analysis.most_affected_nodes.length - 5} more
+              </div>
             )}
           </div>
         </div>

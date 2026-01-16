@@ -1,8 +1,33 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* NFT Marketplace / Cyberpunk Palette */
+  --background: #0f0518;
+  /* Deep Purple Black */
+  --foreground: #ffffff;
+
+  /* Neon Accents */
+  --primary: #d90282;
+  /* Neon Pink */
+  --primary-glow: rgba(217, 2, 130, 0.5);
+
+  --secondary: #00f0ff;
+  /* Cyan */
+  --secondary-glow: rgba(0, 240, 255, 0.5);
+
+  --accent-purple: #5b21b6;
+  /* Deep Violet */
+
+  /* Status Colors */
+  --success: #00ff9d;
+  /* Neon Green */
+  --danger: #ff0055;
+  /* Hot Red */
+
+  /* Glass Surface */
+  --glass-bg: rgba(20, 10, 40, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-highlight: rgba(255, 255, 255, 0.05);
 }
 
 @theme inline {
@@ -12,15 +37,135 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+body {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(91, 33, 182, 0.3) 0%, transparent 40%),
+    /* Purple Blob */
+    radial-gradient(circle at 90% 10%, rgba(217, 2, 130, 0.2) 0%, transparent 40%),
+    /* Pink Blob */
+    radial-gradient(circle at 50% 50%, rgba(30, 10, 60, 0.5) 0%, transparent 60%);
+  /* Center depth */
+  background-attachment: fixed;
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Typography Overrides for that "Web3" look */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  letter-spacing: -0.02em;
+}
+
+/* Glass Card - The main container style */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border-radius: 24px;
+  /* More rounded */
+}
+
+.glass-panel:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(217, 2, 130, 0.1);
+  /* Pink glow on hover */
+}
+
+/* Navigation Specific */
+.glass-nav {
+  background: rgba(15, 5, 24, 0.85);
+  /* Darker, higher opacity */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, #d90282 0%, #9d00ff 100%);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 15px rgba(217, 2, 130, 0.4);
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(217, 2, 130, 0.6);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #fff 0%, #e0e0e0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-pink {
+  background: linear-gradient(135deg, #d90282 0%, #ff5cbe 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Form Elements */
+input,
+textarea,
+select {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--glass-border);
+  color: #fff;
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(217, 2, 130, 0.25);
+  outline: none;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f0518;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }

@@ -99,60 +99,81 @@ export function EmissionForecast() {
     };
 
     return (
-        <div className="bg-slate-900 border border-slate-700 rounded-xl p-5 shadow-lg mt-6 relative min-h-[400px]">
+        <div className="glass-panel p-6 mt-8 relative min-h-[400px]">
             {loading && (
-                <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center rounded-xl">
-                    <div className="flex flex-col items-center gap-3">
-                        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                        <div className="text-blue-400 font-medium animate-pulse">Loading Forecast...</div>
+                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center rounded-2xl">
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                        <div className="text-white font-medium animate-pulse tracking-wide">Calculating Emissions Model...</div>
                     </div>
                 </div>
             )}
 
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-8">
                 <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5" /> Emission Forecast (AI Prediction)
+                    <TrendingUp className="w-5 h-5 text-secondary" />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70">
+                        Emission Forecast (AI Prediction)
+                    </span>
                 </h3>
-                <select
-                    value={days}
-                    onChange={(e) => setDays(Number(e.target.value))}
-                    className="bg-slate-800 text-white text-sm border border-slate-600 rounded px-2 py-1 outline-none focus:ring-1 focus:ring-blue-500"
-                >
-                    <option value={30}>Next 30 Days</option>
-                    <option value={60}>Next 60 Days</option>
-                    <option value={90}>Next 90 Days</option>
-                </select>
+                <div className="relative">
+                    <select
+                        value={days}
+                        onChange={(e) => setDays(Number(e.target.value))}
+                        className="bg-black/20 text-white text-sm border border-white/10 rounded-lg px-3 py-1.5 outline-none focus:ring-1 focus:ring-secondary/50 focus:border-secondary/50 appearance-none pr-8 cursor-pointer hover:bg-white/5 transition-colors"
+                    >
+                        <option value={30} className="bg-slate-900">Next 30 Days</option>
+                        <option value={60} className="bg-slate-900">Next 60 Days</option>
+                        <option value={90} className="bg-slate-900">Next 90 Days</option>
+                    </select>
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-white/50 text-xs">
+                        ▼
+                    </div>
+                </div>
             </div>
 
             <div className="h-[300px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={data}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
                         <XAxis
                             dataKey="date"
-                            stroke="#94a3b8"
+                            stroke="rgba(255,255,255,0.4)"
+                            tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }}
+                            tickLine={{ stroke: 'rgba(255,255,255,0.1)' }}
+                            axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
                             tickFormatter={(str) => {
                                 const date = new Date(str);
                                 return `${date.getDate()}/${date.getMonth() + 1}`;
                             }}
                         />
                         <YAxis
-                            stroke="#94a3b8"
+                            stroke="rgba(255,255,255,0.4)"
+                            tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }}
+                            tickLine={{ stroke: 'rgba(255,255,255,0.1)' }}
+                            axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
                             domain={['auto', 'auto']}
                             ticks={getTicks()}
                             interval={0}
                         />
                         <Tooltip
-                            contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', color: '#fff' }}
+                            contentStyle={{
+                                backgroundColor: 'rgba(15, 5, 24, 0.9)',
+                                borderColor: 'rgba(255,255,255,0.1)',
+                                color: '#fff',
+                                borderRadius: '12px',
+                                boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+                                backdropFilter: 'blur(10px)'
+                            }}
                             itemStyle={{ color: '#fff' }}
                         />
-                        <Legend />
+                        <Legend wrapperStyle={{ paddingTop: '20px' }} />
                         <Line
                             type="monotone"
                             dataKey="emission_hist"
-                            stroke="#ef4444"
+                            stroke="#fb7185" // Rose
                             strokeWidth={3}
-                            dot={{ r: 4, strokeWidth: 2 }}
+                            dot={{ r: 4, strokeWidth: 2, fill: '#fb7185', stroke: '#fff' }}
                             activeDot={{ r: 6 }}
                             name="Historical CO₂"
                             connectNulls
@@ -160,25 +181,25 @@ export function EmissionForecast() {
                         <Line
                             type="monotone"
                             dataKey="emission_pred"
-                            stroke="#10b981"
+                            stroke="#00ff9d" // Neon Green
                             strokeWidth={3}
                             dot={(props: any) => {
                                 if (props.payload.is_connection) return <></>;
                                 if (props.payload.emission_pred === null || props.payload.emission_pred === undefined) return <></>;
-                                return <circle cx={props.cx} cy={props.cy} r={4} stroke={props.stroke} strokeWidth={2} fill="#fff" />
+                                return <circle cx={props.cx} cy={props.cy} r={4} stroke="#fff" strokeWidth={2} fill="#00ff9d" />
                             }}
-                            activeDot={{ r: 6 }}
+                            activeDot={{ r: 6, fill: '#00ff9d', stroke: '#fff' }}
                             name="Predicted CO₂"
                         />
                     </LineChart>
                 </ResponsiveContainer>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mt-4 text-center">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-6 text-center">
                 {data.length > 0 && Object.keys(data[0].sectors).map((sector) => (
-                    <div key={sector} className="bg-slate-950 p-2 rounded border border-slate-800">
-                        <div className="text-xs text-slate-500 uppercase">{sector.replace('_', ' ')}</div>
-                        <div className="text-sm font-bold text-slate-300">
+                    <div key={sector} className="bg-white/5 p-3 rounded-xl border border-white/5 hover:border-white/10 transition-colors">
+                        <div className="text-[10px] text-white/40 uppercase tracking-wider mb-1">{sector.replace('_', ' ')}</div>
+                        <div className="text-sm font-bold text-white">
                             {Math.round(data[data.length - 1].sectors[sector as keyof ForecastData['sectors']])} kt
                         </div>
                     </div>

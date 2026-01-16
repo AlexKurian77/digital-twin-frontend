@@ -222,8 +222,8 @@ export default function CausalGraph() {
       {/* Graph Container - scrollable, natural height */}
       <div
         className={`${isFullScreen
-          ? 'fixed inset-0 z-60 w-screen h-screen bg-slate-900'
-          : 'w-full h-[500px] border-b border-white/10'
+          ? 'fixed inset-0 z-60 w-screen h-screen bg-[#050510]' // Matches global deep bg
+          : 'w-full h-[500px] border-b border-white/5'
           }`}
       >
         <ReactFlow
@@ -236,9 +236,9 @@ export default function CausalGraph() {
           fitView
           colorMode="dark"
         >
-          <Background color="#94a3b8" gap={20} size={1} />
+          <Background color="#3b82f6" gap={24} size={1} className="opacity-10" />
           <Controls
-            className="!bg-slate-800/80 !border-slate-700 !backdrop-blur-md"
+            className="!bg-slate-900/80 !border-white/10 !backdrop-blur-md !text-white"
             style={{
               padding: '4px',
               borderRadius: '8px',
@@ -247,7 +247,7 @@ export default function CausalGraph() {
             <ControlButton
               onClick={() => setIsFullScreen(!isFullScreen)}
               title={isFullScreen ? "Exit Full Screen" : "Full Screen"}
-              className="!bg-slate-700/50 hover:!bg-slate-600 !text-slate-200 !border-none"
+              className="!bg-white/5 hover:!bg-white/10 !text-white !border-none transition-colors"
             >
               {isFullScreen ? "↙" : "↗"}
             </ControlButton>
@@ -257,10 +257,10 @@ export default function CausalGraph() {
       </div>
 
       {/* Instructions */}
-      <div className="bg-blue-900/20 border-y border-blue-500/10 p-3">
-        <p className="text-xs text-blue-200/80 text-center flex items-center justify-center gap-2">
+      <div className="bg-secondary/5 border-y border-secondary/10 p-2">
+        <p className="text-[10px] md:text-xs text-secondary text-center flex items-center justify-center gap-2 font-mono uppercase tracking-wide">
           <Sparkles className="w-3 h-3" />
-          <strong>Tip:</strong> Click on nodes in the graph to disable/enable sectors.
+          Interactive System: Click nodes to toggle sector activity
         </p>
       </div>
 
@@ -268,49 +268,48 @@ export default function CausalGraph() {
       <div className="px-6 py-12 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           {/* Left: Policy Generator */}
-          <div className="lg:col-span-1 glass-panel rounded-2xl p-6 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-              <Search className="w-24 h-24 text-blue-400" />
-            </div>
+          <div className="lg:col-span-1 glass-panel p-6 relative overflow-hidden group">
+            {/* Gradient glow effect */}
+            <div className="absolute -top-10 -right-10 w-40 h-40 bg-pink-500/10 blur-[60px] rounded-full pointer-events-none" />
 
             <div className="flex items-center mb-6 relative z-10">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center mr-3 border border-blue-400/20">
-                <Sparkles className="w-5 h-5 text-blue-400" />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center mr-3 border border-white/10 shadow-inner">
+                <Search className="w-5 h-5 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-white tracking-tight">
-                Policy Cloud
+              <h3 className="text-lg font-bold text-white tracking-wide">
+                AI Policy Agent
               </h3>
             </div>
 
             <div className="space-y-4 relative z-10">
               <div>
-                <label className="text-xs font-semibold block mb-2 text-blue-200/60 uppercase tracking-widest">
-                  Research Query
+                <label className="text-[10px] font-bold block mb-2 text-white/40 uppercase tracking-widest">
+                  Prompt
                 </label>
                 <textarea
                   value={researchQuery}
                   onChange={(e) => setResearchQuery(e.target.value)}
                   placeholder="e.g. How can we reduce transport emissions by 20%?"
-                  className="w-full text-sm rounded-xl p-4 min-h-[120px] resize-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium leading-relaxed"
+                  className="w-full text-sm rounded-xl p-4 min-h-[140px] resize-none bg-black/40 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-secondary/50 focus:ring-1 focus:ring-secondary/50 transition-all font-medium leading-relaxed"
                 />
               </div>
               <button
                 onClick={applyPolicyFromAPI}
                 disabled={loading}
-                className={`w-full py-4 rounded-xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-2 group/btn ${loading
-                  ? "bg-slate-700 cursor-not-allowed opacity-60"
-                  : "bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 shadow-lg shadow-blue-900/20 hover:shadow-blue-900/40 hover:-translate-y-0.5"
+                className={`w-full py-3.5 rounded-xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-2 group/btn ${loading
+                  ? "bg-white/5 cursor-not-allowed opacity-60"
+                  : "btn-primary shadow-lg shadow-pink-500/10"
                   }`}
               >
                 {loading ? (
                   <>
-                    <Loader2 className="animate-spin w-5 h-5" />
-                    Analyzing System...
+                    <Loader2 className="animate-spin w-4 h-4" />
+                    Processing...
                   </>
                 ) : (
                   <>
-                    Generate Policy
-                    <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
+                    Generate & Apply
+                    <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                   </>
                 )}
               </button>
@@ -322,14 +321,14 @@ export default function CausalGraph() {
             {impact ? (
               <ImpactPanel impact={impact} policy={policy} />
             ) : (
-              <div className="glass-panel rounded-2xl p-8 h-full flex flex-col items-center justify-center text-center opacity-80 hover:opacity-100 transition-opacity">
-                <div className="w-16 h-16 rounded-full bg-slate-800/50 flex items-center justify-center mb-4 border border-slate-700/50">
-                  <Activity className="w-8 h-8 text-slate-500" />
+              <div className="glass-panel p-8 h-full flex flex-col items-center justify-center text-center group border-dashed border-white/10">
+                <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-6 border border-white/5 group-hover:scale-110 transition-transform duration-500">
+                  <Activity className="w-8 h-8 text-white/20 group-hover:text-secondary transition-colors" />
                 </div>
                 <h4 className="font-bold text-white mb-2 text-lg">
-                  System Status
+                  System Awaiting Input
                 </h4>
-                <p className="text-slate-400/80 leading-relaxed max-w-md mx-auto">
+                <p className="text-white/40 leading-relaxed max-w-md mx-auto text-sm">
                   {impactMessage}
                 </p>
               </div>

@@ -8,50 +8,55 @@ export default function Navigation() {
   const pathname = usePathname();
 
   const links = [
-    { href: "/", label: "Policy Simulator", icon: <Microscope className="w-5 h-5" /> },
-    { href: "/solutions", label: "Solutions", icon: <Lightbulb className="w-5 h-5" /> },
-    { href: "/health-impact", label: "Health Impact", icon: <Heart className="w-5 h-5" /> },
+    { href: "/", label: "Policy Simulator", icon: <Microscope className="w-4 h-4" /> },
+    { href: "/solutions", label: "Solutions", icon: <Lightbulb className="w-4 h-4" /> },
+    { href: "/health-impact", label: "Health Impact", icon: <Heart className="w-4 h-4" /> },
   ];
 
   return (
-    <nav className="sticky top-0 z-50 glass-nav">
-      <div className="max-w-7xl mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative">
-              <div className="absolute inset-0 bg-blue-500 blur-lg opacity-20 group-hover:opacity-40 transition-opacity" />
-              <Globe className="w-8 h-8 text-blue-400 relative z-10" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-white tracking-tight group-hover:text-blue-200 transition-colors">
-                Urban CO₂ Digital Twin
-              </h1>
-              <p className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors">
-                Environmental Health Dashboard
-              </p>
-            </div>
-          </Link>
+    <nav className="sticky top-0 z-60 glass-nav border-b border-white/5">
+      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
 
-          {/* Navigation Links */}
-          <div className="flex items-center gap-2 bg-slate-900/50 p-1.5 rounded-full border border-slate-800/50 backdrop-blur-sm">
-            {links.map((link) => {
-              const isActive = pathname === link.href;
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-medium transition-all duration-300 ${isActive
-                    ? "bg-blue-600/20 text-blue-300 border border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.2)]"
-                    : "text-slate-400 hover:text-white hover:bg-slate-800/80"
-                    }`}
-                >
-                  <span className={isActive ? "text-blue-400" : ""}>{link.icon}</span>
-                  <span>{link.label}</span>
-                </Link>
-              );
-            })}
+        {/* Brand / Logo */}
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="relative flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-tr from-pink-600 to-purple-600 shadow-[0_0_15px_rgba(217,2,130,0.5)]">
+            <Globe className="w-5 h-5 text-white" />
           </div>
+          <div className="flex flex-col">
+            <span className="text-xl font-bold tracking-tight text-white group-hover:text-pink-200 transition-colors">
+              Urban<span className="text-pink-500">Twin</span>.
+            </span>
+          </div>
+        </Link>
+
+        {/* Desktop Links */}
+        <div className="flex items-center gap-8">
+          {links.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`relative flex items-center gap-2 text-sm font-medium transition-all duration-300 ${isActive ? "text-pink-400" : "text-slate-400 hover:text-white"
+                  }`}
+              >
+                {/* Glow dot for active state */}
+                {isActive && (
+                  <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-pink-500 shadow-[0_0_10px_#d90282]" />
+                )}
+
+                <span className={isActive ? "text-pink-400" : "opacity-70 group-hover:opacity-100"}>
+                  {link.icon}
+                </span>
+                {link.label}
+              </Link>
+            );
+          })}
+
+          {/* Action Button (Style only) */}
+          {/* <button className="ml-4 px-5 py-2 rounded-full bg-white/5 border border-white/10 text-sm font-medium text-white hover:bg-white/10 transition-all hover:scale-105 active:scale-95">
+            Connect
+          </button> */}
         </div>
       </div>
     </nav>
