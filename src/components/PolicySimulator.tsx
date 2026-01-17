@@ -1,4 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useState, useEffect, useRef } from 'react';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import { API_BASE_URL } from '../config';
 import {
     LineChart,
@@ -13,6 +16,7 @@ import {
     ComposedChart
 } from 'recharts';
 import { Scale, TrendingDown, Check, Calendar, Download } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 
 interface Policy {
     id: string;
@@ -76,7 +80,19 @@ interface SimulationResult {
         yearly_adjusted_total?: number;
         yearly_savings?: number;
     };
-    applied_policies: { id: string; name: string; icon: string }[];
+    applied_policies: {
+        id: string;
+        name: string;
+        icon: string;
+        description: string;
+        category: string;
+        details?: {
+            implementation_cost: string;
+            public_acceptance: string;
+            duration: string;
+            last_implemented: string;
+        };
+    }[];
     data_points?: number;
 }
 
@@ -299,43 +315,413 @@ Data Points: ${simulation.data_points || simulation.baseline.length} days
         return report;
     };
 
-    const downloadReport = async () => {
+
+    const chartRef = useRef<HTMLDivElement>(null);
+
+    // Helper: Calculate detailed stats for the report
+    const calculateReportStats = (data: ForecastPoint[]) => {
+        const months: Record<string, { sum: number; count: number; aqiSum: number }> = {};
+        let minEmission = Infinity, maxEmission = -Infinity;
+        let minAQI = Infinity, maxAQI = -Infinity;
+        const sectorTotals: Record<string, number> = {
+            Aviation: 0, Ground_Transport: 0, Industry: 0, Power: 0, Residential: 0
+        };
+
+        data.forEach(d => {
+            // Monthly aggregation
+            const date = new Date(d.date);
+            const month = date.toLocaleString('default', { month: 'long' });
+            if (!months[month]) months[month] = { sum: 0, count: 0, aqiSum: 0 };
+            months[month].sum += d.emission;
+            months[month].count++;
+            // Mock AQI approximation based on emission if not present (simplified for now)
+            // In a real app, we'd have AQI in the forecast point
+            const approxAQI = d.emission * 4.5; // Rough correlation factor
+            months[month].aqiSum += approxAQI;
+
+            // Ranges
+            if (d.emission < minEmission) minEmission = d.emission;
+            if (d.emission > maxEmission) maxEmission = d.emission;
+            if (approxAQI < minAQI) minAQI = approxAQI;
+            if (approxAQI > maxAQI) maxAQI = approxAQI;
+
+            // Sector totals
+            Object.entries(d.sectors).forEach(([sec, val]) => {
+                if (sectorTotals[sec] !== undefined) sectorTotals[sec] += val;
+            });
+        });
+
+        const monthlyAverages = Object.entries(months).map(([m, val]) => ({
+            month: m,
+            avgEmission: val.sum / val.count,
+            avgAQI: val.aqiSum / val.count
+        }));
+
+        return {
+            monthlyAverages,
+            minEmission, maxEmission,
+            minAQI, maxAQI,
+            sectorTotals,
+            totalEmission: Object.values(sectorTotals).reduce((a, b) => a + b, 0)
+        };
+    };
+
+    const generatePDF = async () => {
         if (!simulation || selectedPolicies.length === 0) return;
 
+        const baselineStats = calculateReportStats(simulation.baseline);
+        const policyStats = calculateReportStats(simulation.with_policy);
+
         try {
-            const response = await fetch(`${API_BASE_URL}/api/policies/report`, {
+            const doc = new jsPDF();
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const margin = 20;
+            let themeColor = [16, 185, 129]; // Emerald-500
+
+            // Helper for centered text
+            const centerText = (text: string, y: number, size: number = 10) => {
+                doc.setFontSize(size);
+                const textWidth = doc.getTextWidth(text);
+                doc.text(text, (pageWidth - textWidth) / 2, y);
+            };
+
+            // Helper for horizontal line
+            const drawLine = (y: number) => {
+                doc.setDrawColor(200, 200, 200);
+                doc.line(margin, y, pageWidth - margin, y);
+                return y + 2; // Return next yPos
+            };
+
+            // Helper for section header
+            const drawSectionHeader = (title: string, y: number) => {
+                doc.setFillColor(240, 240, 240);
+                doc.rect(margin, y, pageWidth - (margin * 2), 8, 'F');
+                doc.setFontSize(10);
+                doc.setTextColor(50, 50, 50);
+                doc.setFont("helvetica", "bold");
+                doc.text(title.toUpperCase(), centerTextX(title), y + 5.5);
+                doc.setFont("helvetica", "normal");
+                return y + 14;
+            };
+
+            const centerTextX = (text: string) => {
+                return (pageWidth - doc.getTextWidth(text)) / 2 + (doc.getTextWidth(text) / 2) - (doc.getTextWidth(text) / 2); // Simpler: (PageWidth - TextWidth) / 2
+            };
+
+            // 1. Header & Logo
+            doc.setFillColor(15, 23, 42); // Slate-900 heading
+            doc.rect(0, 0, pageWidth, 40, 'F');
+
+            // Add Logo
+            const logoImg = new Image();
+            logoImg.src = '/carma-logo.png';
+            await new Promise((resolve) => {
+                logoImg.onload = resolve;
+                logoImg.onerror = resolve;
+            });
+            doc.addImage(logoImg, 'PNG', margin, 5, 30, 30);
+
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(22);
+            doc.text(`${selectedYear} Emissions Data Analysis Report`, margin + 35, 20);
+
+            doc.setFontSize(10);
+            doc.text(`Generated: ${new Date().toLocaleString()}`, margin + 35, 32);
+            doc.text(`Simulation Duration: ${simulation.data_points} days`, pageWidth - margin - 50, 32);
+
+            let yPos = 55;
+            doc.setTextColor(0, 0, 0);
+
+            // 2. Average Values & Key Stats
+            yPos = drawSectionHeader("AVERAGE VALUES & KEY STATS", yPos);
+
+            const tableHeaders = ["Metric", "Baseline", "With Policy", "Change", "% Change"];
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "bold");
+            let xPos = margin;
+            tableHeaders.forEach(h => { doc.text(h, xPos, yPos); xPos += 35; });
+            yPos += 5;
+            doc.line(margin, yPos - 3, pageWidth - margin, yPos - 3); // Header line
+
+            const rows = [
+                ["Daily Avg Emissions",
+                    `${simulation.summary.baseline_avg.toFixed(2)}`,
+                    `${simulation.summary.adjusted_avg.toFixed(2)}`,
+                    `${simulation.summary.total_reduction.toFixed(2)}`,
+                    `${simulation.summary.change_pct.toFixed(2)}%`
+                ],
+                ["Yearly Total (Mt)",
+                    `${((simulation.summary.yearly_baseline_total ?? 0) / 1000).toFixed(2)}`,
+                    `${((simulation.summary.yearly_adjusted_total ?? 0) / 1000).toFixed(2)}`,
+                    `${((simulation.summary.yearly_savings ?? 0) / 1000).toFixed(2)}`,
+                    `${simulation.summary.change_pct.toFixed(2)}%`
+                ]
+            ];
+
+            doc.setFont("helvetica", "normal");
+            rows.forEach(row => {
+                xPos = margin;
+                row.forEach(cell => { doc.text(cell, xPos, yPos); xPos += 35; });
+                yPos += 6;
+            });
+            yPos += 8;
+
+            // 3. Sector Breakdown (Table)
+            yPos = drawSectionHeader("SECTOR BREAKDOWN & COMPARISON", yPos);
+
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "bold");
+            doc.text("Sector", margin, yPos);
+            doc.text("Baseline (kt)", margin + 50, yPos);
+            doc.text("With Policy (kt)", margin + 85, yPos);
+            doc.text("Impact", margin + 120, yPos);
+            doc.text("Contribution %", margin + 150, yPos);
+            yPos += 5;
+            doc.line(margin, yPos - 3, pageWidth - margin, yPos - 3);
+
+            doc.setFont("helvetica", "normal");
+            Object.keys(baselineStats.sectorTotals).forEach(sector => {
+                const baseVal = baselineStats.sectorTotals[sector];
+                const polVal = policyStats.sectorTotals[sector];
+                const diff = baseVal - polVal; // Positive means reduction
+                const pctChange = ((polVal - baseVal) / baseVal) * 100;
+                const contribPct = (polVal / policyStats.totalEmission) * 100;
+
+                doc.text(sector.replace('_', ' '), margin, yPos);
+                doc.text((baseVal / 1000).toFixed(2), margin + 50, yPos); // kt -> roughly similar scale
+                doc.text((polVal / 1000).toFixed(2), margin + 85, yPos);
+                doc.setTextColor(diff > 0 ? 0 : 200, diff > 0 ? 150 : 0, 0); // Green for reduction, Red for increase
+                doc.text(`${Math.abs(pctChange).toFixed(1)}% ${pctChange < 0 ? '↓' : '↑'}`, margin + 120, yPos);
+                doc.setTextColor(0, 0, 0);
+                doc.text(`${contribPct.toFixed(1)}%`, margin + 150, yPos);
+
+                yPos += 6;
+            });
+            yPos += 8;
+
+            // 4. Monthly Averages (Quick Table)
+            // Only show if we have enough months (e.g., > 1)
+            if (policyStats.monthlyAverages.length > 1) {
+                // Check space
+                if (yPos > pageHeight - 60) { doc.addPage(); yPos = 20; }
+
+                yPos = drawSectionHeader("MONTHLY AVERAGES (FORECAST)", yPos);
+                doc.setFontSize(9);
+                doc.setFont("helvetica", "bold");
+                doc.text("Month", margin, yPos);
+                doc.text("Avg Emissions (kt)", margin + 60, yPos);
+                doc.text("Avg AQI (Est)", margin + 120, yPos);
+                yPos += 5;
+                doc.line(margin, yPos - 3, pageWidth - margin, yPos - 3);
+
+                doc.setFont("helvetica", "normal");
+                policyStats.monthlyAverages.forEach(m => {
+                    doc.text(m.month, margin, yPos);
+                    doc.text(m.avgEmission.toFixed(2), margin + 60, yPos);
+                    doc.text(m.avgAQI.toFixed(0), margin + 120, yPos);
+                    yPos += 6;
+
+                    if (yPos > pageHeight - 20) { doc.addPage(); yPos = 20; }
+                });
+                yPos += 8;
+            }
+
+            // 5. Identified Trends & Conclusion
+            if (yPos > pageHeight - 80) { doc.addPage(); yPos = 20; }
+            yPos = drawSectionHeader("IDENTIFIED TRENDS & INSIGHTS", yPos);
+
+            // Find max/min month
+            const maxMonth = policyStats.monthlyAverages.reduce((a, b) => a.avgEmission > b.avgEmission ? a : b);
+            const minMonth = policyStats.monthlyAverages.reduce((a, b) => a.avgEmission < b.avgEmission ? a : b);
+
+            // Find top sector
+            const topSector = Object.entries(policyStats.sectorTotals).reduce((a, b) => a[1] > b[1] ? a : b);
+            const topSectorPct = ((topSector[1] / policyStats.totalEmission) * 100).toFixed(1);
+
+            const trends = [
+                `• Peak Emissions: Observed in ${maxMonth.month} (${maxMonth.avgEmission.toFixed(2)} kt avg).`,
+                `• Lowest Emissions: Observed in ${minMonth.month} (${minMonth.avgEmission.toFixed(2)} kt avg).`,
+                `• Primary Contributor: ${topSector[0].replace('_', ' ')} accounts for ${topSectorPct}% of total emissions.`,
+                `• Policy Impact: The selected policies resulted in a ${Math.abs(simulation.summary.change_pct).toFixed(1)}% reduction in total emissions.`
+            ];
+
+            doc.setFontSize(10);
+            trends.forEach(t => {
+                doc.text(t, margin, yPos);
+                yPos += 6;
+            });
+            yPos += 5;
+
+            doc.setFont("helvetica", "italic");
+            const conclusion = `CONCLUSION: The simulation for ${selectedYear} indicates that policy interventions like ${selectedPolicies.length > 0 ? selectedPolicies[0] : '...'} efficiently mitigate emissions, particularly in the ${topSector[0]} sector.`;
+            const splitConclusion = doc.splitTextToSize(conclusion, pageWidth - (margin * 2));
+            doc.text(splitConclusion, margin, yPos);
+            yPos += (splitConclusion.length * 5) + 10;
+
+            // 6. Visual Chart (New Page for cleanup)
+            doc.addPage();
+            yPos = 20;
+            yPos = drawSectionHeader("VISUALIZATION", yPos);
+
+            if (chartRef.current) {
+                const canvas = await html2canvas(chartRef.current, {
+                    scale: 2,
+                    backgroundColor: '#111827',
+                    logging: false
+                });
+                const imgData = canvas.toDataURL('image/png');
+                const imgProps = doc.getImageProperties(imgData);
+                const pdfWidth = pageWidth - (margin * 2);
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+                doc.addImage(imgData, 'PNG', margin, yPos, pdfWidth, pdfHeight);
+            }
+
+            // Footer
+            const pageCount = doc.internal.pages.length - 1; // jsPDF array has extra empty page? check docs logic or just use simple counter
+            // doc.text(`Page 1 of ${pageCount}`, ...) - hard to know total beforehand without buffering
+            doc.setFontSize(8);
+            doc.setTextColor(150, 150, 150);
+            doc.text("Generated by CARMA Urban Digital Twin", margin, pageHeight - 10);
+
+            doc.save(`analyzed_report_${selectedYear}.pdf`);
+
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+        }
+    };
+
+    const [chatOpen, setChatOpen] = useState(false);
+    const [chatQuery, setChatQuery] = useState('');
+    const [chatHistory, setChatHistory] = useState<{ role: 'user' | 'assistant', content: string }[]>([]);
+    const [chatLoading, setChatLoading] = useState(false);
+
+    const handleChatSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!chatQuery.trim() || selectedPolicies.length === 0) return;
+
+        const userMsg = chatQuery;
+        setChatHistory(prev => [...prev, { role: 'user', content: userMsg }]);
+        setChatQuery('');
+        setChatLoading(true);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/policies/chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     policy_ids: selectedPolicies,
-                    year: selectedYear
+                    question: userMsg
                 })
             });
-
-            if (!response.ok) {
-                throw new Error('Failed to generate report');
+            const result = await response.json();
+            if (result.status === 'success') {
+                setChatHistory(prev => [...prev, { role: 'assistant', content: result.answer }]);
+            } else {
+                setChatHistory(prev => [...prev, { role: 'assistant', content: "Sorry, I couldn't process that request." }]);
             }
-
-            // Get the blob from response
-            const blob = await response.blob();
-            const filename = `policy_simulation_${selectedYear}_report.txt`;
-
-            // Create download link
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
         } catch (error) {
-            console.error('Error downloading report:', error);
+            console.error("Chat error:", error);
+            setChatHistory(prev => [...prev, { role: 'assistant', content: "Error connecting to AI service." }]);
+        } finally {
+            setChatLoading(false);
         }
     };
 
     return (
-        <div className="glass-panel p-6 mt-6">
+        <div className="glass-panel p-6 mt-6 relative">
+            {/* Chat Interface - Floating or Integrated */}
+            {selectedPolicies.length > 0 && (
+                <div className={`fixed bottom-6 right-6 z-50 transition-all duration-300 ${chatOpen ? 'w-96' : 'w-auto'}`}>
+                    {!chatOpen && (
+                        <button
+                            onClick={() => setChatOpen(true)}
+                            className="group relative overflow-hidden bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white p-4 pl-5 pr-6 rounded-full shadow-lg shadow-emerald-600/40 flex items-center gap-3 transition-all duration-300 hover:scale-105 hover:shadow-emerald-500/50 border border-white/10"
+                        >
+                            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 pointer-events-none blur-md" />
+                            <span className="text-2xl animate-pulse">✨</span>
+                            <div className="flex flex-col items-start leading-tight">
+                                <span className="text-[10px] text-emerald-200 uppercase tracking-wider font-bold">AI Assistant</span>
+                                <span className="font-bold text-sm">Analyze Policies</span>
+                            </div>
+                        </button>
+                    )}
+
+                    {chatOpen && (
+                        <div className="bg-[#0f1014] border border-white/10 rounded-2xl shadow-2xl flex flex-col h-[500px] overflow-hidden">
+                            <div className="p-4 border-b border-white/10 flex items-center justify-between bg-white/5">
+                                <h4 className="font-bold text-white flex items-center gap-2">
+                                    <span className="text-xl">✨</span> Gemini Policy Analyst
+                                </h4>
+                                <button
+                                    onClick={() => setChatOpen(false)}
+                                    className="text-white/40 hover:text-white"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+
+                            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                                {chatHistory.length === 0 && (
+                                    <div className="text-center text-white/40 mt-10">
+                                        <p className="mb-2">👋 Hi! I'm your policy assistant.</p>
+                                        <p className="text-xs">Ask me about the selected policies, their costs, or potential impacts.</p>
+                                    </div>
+                                )}
+                                {chatHistory.map((msg, idx) => (
+                                    <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                        <div className={`max-w-[85%] p-3 rounded-xl text-sm ${msg.role === 'user'
+                                            ? 'bg-blue-600 text-white rounded-tr-none'
+                                            : 'bg-white/10 text-white/90 rounded-tl-none'
+                                            }`}>
+                                            <ReactMarkdown
+                                                components={{
+                                                    strong: (props: any) => <span className="font-bold text-blue-200" {...props} />,
+                                                    ul: (props: any) => <ul className="list-disc pl-4 space-y-1 my-1" {...props} />,
+                                                    li: (props: any) => <li className="marker:text-blue-400" {...props} />,
+                                                    p: (props: any) => <p className="mb-1 last:mb-0" {...props} />
+                                                }}
+                                            >
+                                                {msg.content}
+                                            </ReactMarkdown>
+                                        </div>
+                                    </div>
+                                ))}
+                                {chatLoading && (
+                                    <div className="flex justify-start">
+                                        <div className="bg-white/10 p-3 rounded-xl rounded-tl-none flex gap-1">
+                                            <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce" />
+                                            <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce delay-75" />
+                                            <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce delay-150" />
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            <form onSubmit={handleChatSubmit} className="p-3 border-t border-white/10 bg-white/5">
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={chatQuery}
+                                        onChange={(e) => setChatQuery(e.target.value)}
+                                        placeholder="Ask a question..."
+                                        className="flex-1 bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500/50"
+                                    />
+                                    <button
+                                        type="submit"
+                                        disabled={chatLoading || !chatQuery.trim()}
+                                        className="bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white p-2 rounded-lg transition-colors"
+                                    >
+                                        ➤
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    )}
+                </div>
+            )}
+
             {/* Header with Year Selector */}
             <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-bold text-white flex items-center gap-2">
@@ -370,11 +756,11 @@ Data Points: ${simulation.data_points || simulation.baseline.length} days
                     </div>
                     {simulation && (
                         <button
-                            onClick={downloadReport}
+                            onClick={generatePDF}
                             className="flex items-center gap-1.5 text-xs bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 px-3 py-1.5 rounded-full transition-all border border-emerald-500/30"
                         >
                             <Download className="w-3.5 h-3.5" />
-                            Download Report
+                            Download PDF Report
                         </button>
                     )}
                     {selectedPolicies.length > 0 && (
@@ -470,7 +856,7 @@ Data Points: ${simulation.data_points || simulation.baseline.length} days
                             <span className="text-white/30">{simulation.data_points || getChartData().length * 7} days of data</span>
                         </div>
                     </div>
-                    <div className="h-[300px] w-full mb-6">
+                    <div ref={chartRef} className="h-[300px] w-full mb-6 p-2 bg-[#0d121f] rounded-xl">
                         <ResponsiveContainer width="100%" height="100%">
                             <ComposedChart data={getChartData()}>
                                 <defs>
