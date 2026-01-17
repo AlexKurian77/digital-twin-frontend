@@ -34,7 +34,7 @@ export function AQIMaps() {
             <div className="glass-panel p-6">
                 <div className="flex items-center justify-between mb-6">
                     <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                        <span role="img" aria-label="map">🗺️</span> Delhi Coverage Heatmap
+                        <span role="img" aria-label="map">🗺️</span> Delhi AQI Heatmap
                     </h3>
                     <button
                         onClick={() => {
@@ -85,7 +85,7 @@ export function AQIMaps() {
             <div className="glass-panel p-6">
                 <div className="flex items-center justify-between mb-6">
                     <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                        <span role="img" aria-label="target">📍</span> Sensor Hotspots
+                        <span role="img" aria-label="target">📍</span> AQI Hotspots
                         {selectedYear && (
                             <span className="text-xs font-normal bg-purple-500/30 text-purple-300 px-2 py-0.5 rounded-full border border-purple-500/50">
                                 {selectedYear} Forecast

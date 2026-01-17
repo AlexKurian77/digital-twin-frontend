@@ -25,6 +25,7 @@ import { HistoricEmissions } from "./HistoricEmissions";
 import type { NodeTypes } from "@xyflow/react";
 import { AQIMaps } from "./AQIMaps";
 import { EmissionMaps } from "./EmissionMaps";
+import { SectorMaps } from "./SectorMaps";
 import { PolicySimulator } from "./PolicySimulator";
 
 const nodeTypes: NodeTypes = {
@@ -417,6 +418,11 @@ export default function CausalGraph() {
             <div className="w-full">
               <Reveal delay={525}>
                 <EmissionMaps />
+              </Reveal>
+            </div>
+            <div className="w-full">
+              <Reveal delay={550}>
+                <SectorMaps />
               </Reveal>
             </div>
           </div>
