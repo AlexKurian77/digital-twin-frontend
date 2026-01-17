@@ -28,7 +28,6 @@ interface MonthlyData {
 export function HistoricEmissions() {
     const [data, setData] = useState<MonthlyData[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeView, setActiveView] = useState<'emissions' | 'aqi'>('emissions');
 
     useEffect(() => {
         fetchHistoricData();
@@ -90,102 +89,124 @@ export function HistoricEmissions() {
                 </div>
             )}
 
-            <div className="flex items-center justify-between mb-8">
+            <div className="mb-6">
                 <h3 className="text-lg font-bold text-white flex items-center gap-2">
                     <History className="w-5 h-5 text-amber-400" />
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70">
                         Historic Monthly Trends (2019-2025)
                     </span>
                 </h3>
-                <div className="flex gap-2">
-                    <button
-                        onClick={() => setActiveView('emissions')}
-                        className={`px-4 py-1.5 text-sm rounded-lg transition-all ${activeView === 'emissions'
-                            ? 'bg-rose-500/30 text-rose-300 border border-rose-500/50'
-                            : 'bg-white/5 text-white/60 border border-white/10 hover:bg-white/10'
-                            }`}
-                    >
-                        CO₂ Emissions
-                    </button>
-                    <button
-                        onClick={() => setActiveView('aqi')}
-                        className={`px-4 py-1.5 text-sm rounded-lg transition-all ${activeView === 'aqi'
-                            ? 'bg-purple-500/30 text-purple-300 border border-purple-500/50'
-                            : 'bg-white/5 text-white/60 border border-white/10 hover:bg-white/10'
-                            }`}
-                    >
-                        AQI
-                    </button>
-                </div>
             </div>
 
-            <div className="h-[300px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={data}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                        <XAxis
-                            dataKey="month"
-                            stroke="rgba(255,255,255,0.4)"
-                            tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }}
-                            tickLine={{ stroke: 'rgba(255,255,255,0.1)' }}
-                            axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
-                            tickFormatter={formatMonth}
-                            interval={Math.floor(data.length / 12)}
-                        />
-                        <YAxis
-                            stroke="rgba(255,255,255,0.4)"
-                            tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }}
-                            tickLine={{ stroke: 'rgba(255,255,255,0.1)' }}
-                            axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
-                            domain={['auto', 'auto']}
-                            ticks={activeView === 'emissions' ? getEmissionTicks() : getAqiTicks()}
-                            interval={0}
-                        />
-                        <Tooltip
-                            contentStyle={{
-                                backgroundColor: 'rgba(15, 5, 24, 0.9)',
-                                borderColor: 'rgba(255,255,255,0.1)',
-                                color: '#fff',
-                                borderRadius: '12px',
-                                boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
-                                backdropFilter: 'blur(10px)'
-                            }}
-                            itemStyle={{ color: '#fff' }}
-                            labelFormatter={(label) => formatMonth(label)}
-                            formatter={(value: number | undefined, name: string | undefined) => {
-                                if (value === undefined) return ['-', name ?? ''];
-                                if (name === 'total_emissions') return [`${value} kt CO₂`, 'Emissions'];
-                                if (name === 'aqi') return [value, 'AQI'];
-                                return [value, name ?? ''];
-                            }}
-                        />
-                        <Legend wrapperStyle={{ paddingTop: '20px' }} />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* CO2 Emissions Chart */}
+                <div className="flex flex-col">
+                    <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-sm font-medium text-rose-300 bg-rose-500/10 px-3 py-1 rounded-full border border-rose-500/20">
+                            CO₂ Emissions
+                            <span className="ml-2 opacity-50 text-xs">kt</span>
+                        </h4>
+                    </div>
+                    <div className="h-[250px] w-full bg-white/[0.02] rounded-xl border border-white/5 p-4">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={data}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                                <XAxis
+                                    dataKey="month"
+                                    stroke="rgba(255,255,255,0.2)"
+                                    tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickFormatter={formatMonth}
+                                    interval={Math.floor(data.length / 6)}
+                                />
+                                <YAxis
+                                    stroke="rgba(255,255,255,0.2)"
+                                    tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    domain={['auto', 'auto']}
+                                    ticks={getEmissionTicks()}
+                                />
+                                <Tooltip
+                                    contentStyle={{
+                                        backgroundColor: 'rgba(15, 5, 24, 0.9)',
+                                        borderColor: 'rgba(255,255,255,0.1)',
+                                        color: '#fff',
+                                        borderRadius: '8px',
+                                        boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+                                        fontSize: '12px'
+                                    }}
+                                    itemStyle={{ color: '#fff' }}
+                                    labelFormatter={(label) => formatMonth(label)}
+                                />
+                                <Line
+                                    type="monotone"
+                                    dataKey="total_emissions"
+                                    stroke="#fb7185"
+                                    strokeWidth={3}
+                                    dot={false}
+                                    activeDot={{ r: 4, fill: '#fb7185', stroke: '#fff', strokeWidth: 2 }}
+                                    name="CO₂"
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
 
-                        {activeView === 'emissions' && (
-                            <Line
-                                type="monotone"
-                                dataKey="total_emissions"
-                                stroke="#fb7185"
-                                strokeWidth={2}
-                                dot={false}
-                                activeDot={{ r: 5, fill: '#fb7185', stroke: '#fff', strokeWidth: 2 }}
-                                name="Monthly CO₂ Emissions"
-                            />
-                        )}
-
-                        {activeView === 'aqi' && (
-                            <Line
-                                type="monotone"
-                                dataKey="aqi"
-                                stroke="#a855f7"
-                                strokeWidth={2}
-                                dot={false}
-                                activeDot={{ r: 5, fill: '#a855f7', stroke: '#fff', strokeWidth: 2 }}
-                                name="Monthly AQI"
-                            />
-                        )}
-                    </LineChart>
-                </ResponsiveContainer>
+                {/* AQI Chart */}
+                <div className="flex flex-col">
+                    <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-sm font-medium text-purple-300 bg-purple-500/10 px-3 py-1 rounded-full border border-purple-500/20">
+                            Air Quality Index (AQI)
+                        </h4>
+                    </div>
+                    <div className="h-[250px] w-full bg-white/[0.02] rounded-xl border border-white/5 p-4">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={data}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                                <XAxis
+                                    dataKey="month"
+                                    stroke="rgba(255,255,255,0.2)"
+                                    tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickFormatter={formatMonth}
+                                    interval={Math.floor(data.length / 6)}
+                                />
+                                <YAxis
+                                    stroke="rgba(255,255,255,0.2)"
+                                    tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    domain={['auto', 'auto']}
+                                    ticks={getAqiTicks()}
+                                />
+                                <Tooltip
+                                    contentStyle={{
+                                        backgroundColor: 'rgba(15, 5, 24, 0.9)',
+                                        borderColor: 'rgba(255,255,255,0.1)',
+                                        color: '#fff',
+                                        borderRadius: '8px',
+                                        boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+                                        fontSize: '12px'
+                                    }}
+                                    itemStyle={{ color: '#fff' }}
+                                    labelFormatter={(label) => formatMonth(label)}
+                                />
+                                <Line
+                                    type="monotone"
+                                    dataKey="aqi"
+                                    stroke="#a855f7"
+                                    strokeWidth={3}
+                                    dot={false}
+                                    activeDot={{ r: 4, fill: '#a855f7', stroke: '#fff', strokeWidth: 2 }}
+                                    name="AQI"
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
             </div>
 
             {/* Stats summary */}
