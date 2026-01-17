@@ -21,8 +21,10 @@ import { initialEdges } from "../data/edges";
 import { runSimulation } from "./simulation";
 import { EmissionForecast } from "./EmissionForecast";
 import { AQITrends } from "./AQITrends";
+import { HistoricEmissions } from "./HistoricEmissions";
 import type { NodeTypes } from "@xyflow/react";
 import { AQIMaps } from "./AQIMaps";
+import { PolicySimulator } from "./PolicySimulator";
 
 const nodeTypes: NodeTypes = {
   causal: CausalNode as NodeTypes['causal'],
@@ -312,7 +314,7 @@ export default function CausalGraph() {
       </div>
 
       {/* Bottom Section - Control Panel & Results */}
-      <div className="px-6 py-12 max-w-7xl mx-auto">
+      <div className="px-6 py-12 max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           {/* Left: Policy Generator */}
           <div className="lg:col-span-1">
@@ -385,14 +387,25 @@ export default function CausalGraph() {
               )}
             </Reveal>
           </div>
-
-          <div className="lg:flex-col w-[96vw] space-y-6">
+        </div>
+        <div className="w-full" style={{ minWidth: '100%' }}>
+          <div className="lg:flex-col w-full border border-white/10 space-y-6">
             <div className="flex flex-col lg:flex-row gap-4 w-full">
               <Reveal delay={300} className="flex-1 h-full">
                 <EmissionForecast />
               </Reveal>
               <Reveal delay={400} className="flex-1 h-full mt-2">
                 <AQITrends />
+              </Reveal>
+            </div>
+            <div className="w-full">
+              <Reveal delay={450}>
+                <HistoricEmissions />
+              </Reveal>
+            </div>
+            <div className="w-full">
+              <Reveal delay={475}>
+                <PolicySimulator />
               </Reveal>
             </div>
             <div className="w-full">
