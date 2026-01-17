@@ -509,8 +509,13 @@ Data Points: ${simulation.data_points || simulation.baseline.length} days
                                     itemStyle={{ color: '#fff' }}
                                     formatter={(value: number | undefined, name: string | undefined) => {
                                         if (value === undefined) return ['-', name ?? ''];
-                                        const label = name === 'baseline' ? 'Baseline' : 'With Policy';
-                                        return [`${value.toFixed(2)} kt CO₂`, label];
+                                        // Map dataKey to proper labels
+                                        if (name === 'baseline' || name === 'Baseline (No Policy)') {
+                                            return [`${value.toFixed(2)} kt CO₂`, 'Baseline (No Policy)'];
+                                        } else if (name === 'withPolicy' || name === 'With Selected Policies') {
+                                            return [`${value.toFixed(2)} kt CO₂`, 'With Policy'];
+                                        }
+                                        return [`${value.toFixed(2)} kt CO₂`, name ?? ''];
                                     }}
                                     labelFormatter={(dateStr) => {
                                         const date = new Date(dateStr);
@@ -523,6 +528,7 @@ Data Points: ${simulation.data_points || simulation.baseline.length} days
                                     dataKey="withPolicy"
                                     fill="url(#policyGradient)"
                                     stroke="transparent"
+                                    legendType="none"
                                 />
                                 <Line
                                     type="monotone"
