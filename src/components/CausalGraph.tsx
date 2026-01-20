@@ -391,7 +391,7 @@ export default function CausalGraph() {
           </div>
         </div>
         <div className="w-full" style={{ minWidth: '100%' }}>
-          <div className="lg:flex-col w-full border border-white/10 space-y-6">
+          <div className="lg:flex-col w-full space-y-6">
             <div className="flex flex-col lg:flex-row gap-4 w-full">
               <Reveal delay={300} className="flex-1 h-full">
                 <EmissionForecast />
